@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_title">유튜브 제스처 제어</string>
+    <string name="explanation">SENA 라고 말한 뒤 손바닥을 펼치면 일시정지, 엄지를 올리면 재생합니다.</string>
+    <string name="section_status">상태</string>
+    <string name="wake_word_status">호출어 문구: %1$s</string>
+    <string name="request_permissions">권한 요청</string>
+    <string name="app_settings">앱 설정</string>
+    <string name="notification_access">알림 접근 설정</string>
+    <string name="overlay_settings">화면 위 표시 설정</string>
+    <string name="overlay_title">호출어를 화면 위에 표시</string>
+    <string name="overlay_message">SENA가 들리면 유튜브 위에 파란 표시를 잠깐 띄웁니다. 다른 앱 위에 표시를 허용해야 합니다. 허용하지 않으면 알림 배너로만 알려 줍니다. 터치는 받지 않습니다.</string>
+    <string name="start_control">제어 시작</string>
+    <string name="stop_control">제어 중지</string>
+    <string name="notification_warning">알림 게시 권한이 없으면 상태 알림과 중지 버튼이 보이지 않을 수 있습니다. 앱으로 돌아와 제어 중지를 누를 수 있습니다.</string>
+    <string name="notification_access_title">알림 접근이 필요한 이유</string>
+    <string name="notification_access_message">알림 접근은 알림을 띄우는 권한과 다릅니다. 안드로이드는 이 접근을 허용한 앱에만 다른 앱의 미디어 세션 목록을 보여 줍니다. 유튜브 재생을 찾고 일시정지 또는 재생을 요청하는 데만 사용하며, 알림 내용은 저장하거나 업로드하지 않습니다. 설정에서 이 앱을 켠 뒤 돌아오면 상태를 다시 확인합니다.</string>
+    <string name="open_settings">설정 열기</string>
+    <string name="cancel">취소</string>
+    <string name="notification_listener_label">유튜브 미디어 세션 확인</string>
+    <string name="start_requires_visible_activity">제어는 이 화면이 보이는 동안만 시작할 수 있습니다.</string>
+    <string name="model_missing">제스처 모델 파일이 없습니다.</string>
+    <string name="permissions_already_granted">필요한 런타임 권한이 이미 허용되어 있습니다.</string>
+    <string name="permission_permanently_denied">시스템이 권한 창을 다시 보여 주지 않습니다. 앱 설정에서 허용하세요.</string>
+    <string name="settings_open_failed">설정 화면을 열지 못했습니다.</string>
+</resources>

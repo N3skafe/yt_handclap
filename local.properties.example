@@ -1,0 +1,4 @@
+# 호출어는 앱에 포함된 sherpa-onnx 영어 모델입니다.
+# API 키나 local.properties 항목은 필요 없습니다.
+# 말할 문구: HELLO WORLD
+sdk.dir=C\:/Users/KimDongjune/AppData/Local/Android/Sdk

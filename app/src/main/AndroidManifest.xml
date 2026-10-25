@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 전면 카메라로 손 모양을 확인합니다. 영상은 저장하지 않습니다. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 호출어를 기기 안에서 듣기 위해 필요합니다. 오디오는 올리지 않습니다. -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- 안드로이드 13 이상에서 상태 알림을 보여 주기 위한 권한입니다. 알림 접근과는 다릅니다. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 유튜브 화면 위에 호출어를 들었다는 짧은 표시를 내기 위한 권한입니다. -->
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- 대상 SDK 34 이상에서는 유형별 권한이 있어야 해당 포그라운드 서비스를 시작할 수 있습니다. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+    <!--
+      CAMERA 권한은 후면 카메라 기능을 필수로 가정하게 만듭니다.
+      이 앱은 전면 카메라만 필요하므로 일반 카메라 기능은 필수가 아니라고 밝힙니다.
+    -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera.front"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="true" />
+
+    <!-- 유튜브 설치 여부를 구분하기 위한 좁은 조회입니다. 전체 앱 목록 권한은 쓰지 않습니다. -->
+    <queries>
+        <package android:name="com.google.android.youtube" />
+    </queries>
+
+    <application
+        android:name=".YouTubeGestureApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_title"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.YouTubeGestureControl">
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+          카메라와 마이크 유형을 함께 선언합니다.
+          앱이 보이는 동안 두 유형으로 시작한 뒤에만, 유튜브가 앞에 있을 때 카메라를 열 수 있습니다.
+          최근 앱에서 작업을 지워도 시스템이 허용하는 동안은 알림으로 유지합니다.
+          stopWithTask를 true로 두면 화면을 떠나는 순간 제어가 멈춥니다.
+        -->
+        <service
+            android:name=".service.ControlService"
+            android:exported="false"
+            android:foregroundServiceType="camera|microphone"
+            android:stopWithTask="false" />
+
+        <service
+            android:name=".media.MediaNotificationListener"
+            android:exported="true"
+            android:label="@string/notification_listener_label"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

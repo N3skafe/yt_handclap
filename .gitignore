@@ -1,0 +1,18 @@
+.gradle/
+build/
+local.properties
+/.idea/
+*.iml
+.cxx/
+.externalNativeBuild/
+captures/
+*.apk
+*.ap_
+*.aab
+*.hprof
+.DS_Store
+
+# 호출어 모델과 AccessKey는 개발자 기기에서만 둡니다.
+app/src/main/assets/porcupine/*.ppn
+app/src/main/assets/porcupine/*.pv
+app/src/main/assets/wake_word.properties
