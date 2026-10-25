@@ -1,4 +1,84 @@
-# 유튜브 제스처 제어
+# YouTube Gesture Control / 유튜브 제스처 제어
+
+Android app that pauses and resumes a video in the installed YouTube app with a wake word and a hand gesture. The screen of this app is in Korean. English and Korean guides below describe the same app.
+
+이 앱은 폰에 설치된 유튜브 앱의 일반 동영상을 호출어와 손 동작으로 일시정지하거나 다시 재생합니다. 아래 영어와 한국어 안내는 같은 내용을 각각 적었습니다.
+
+## English
+
+### What this app is
+
+YouTube Gesture Control listens for the English wake word **SENA**, then opens the front camera for a few seconds. An open palm sends pause to YouTube. A thumbs-up sends play. Speech and hand recognition stay on the phone. There is no account and no API key.
+
+The app sends those two commands to the YouTube app package `com.google.android.youtube`. It is aimed at a regular video while YouTube exposes a media session and notification access is on. Each wake accepts one command. An open palm always pauses, and a thumbs-up always plays.
+
+Palm pause and thumb play were checked on a phone. Hearing a spoken **SENA** and then opening the camera has been checked with an English recording, and has not yet been checked with a person speaking into the phone.
+
+Audio is used only to decide whether **SENA** was said. Camera frames are used only to classify the hand. Neither is saved to a file or uploaded. The notification listener is used to find YouTube's media session.
+
+### How to use it
+
+You need Android 8.0 or later, a front camera, a microphone, and the YouTube app. This project builds a debug APK at `app/build/outputs/apk/debug/app-debug.apk`. See [Developer notes](#개발-참고) for the build command.
+
+1. Install and open **유튜브 제스처 제어**.
+2. Tap **권한 요청** (Request permissions). Allow the camera, the microphone, and, on Android 13 or later, notifications.
+3. Tap **알림 접근 설정** (Notification access). Turn this app on, then come back. Android shows other apps' media sessions only to apps with this access. The app uses that list to find YouTube and request pause or play.
+4. Optional: tap **화면 위 표시 설정** (Display over other apps) and allow this app. When **SENA** is heard, a blue banner appears briefly over YouTube and the phone vibrates. The banner does not take touches. If you skip this, the app still starts and reports the wake word through the status notification.
+5. Open YouTube and start a regular video.
+6. Return to this app while its screen is visible and tap **제어 시작** (Start control). The app can be started only from that visible screen. It does not start on boot.
+7. Switch back to YouTube. A status notification stays up. While the app is waiting for the wake word, the camera stays closed.
+8. Say **SENA** in English, then pause for a moment. Speak closer to the phone if the status says the microphone is quiet.
+9. Within about 10 seconds, hold one hand toward the front camera:
+   - Open palm, fingers spread: pause.
+   - Thumbs-up: play.
+   Hold the same shape for about a quarter of a second. The camera closes, the command goes to YouTube, and the app waits for **SENA** again.
+10. Tap **제어 중지** (Stop control) in the app or in the notification when you are done. If notifications are off, open the app and use the button there.
+
+If 10 seconds pass with no confirmed gesture, no command is sent and the app listens for **SENA** again. If YouTube has no active session, the status says so. Play a regular video and try again.
+
+## 한국어
+
+### 이 앱은 무엇인가
+
+유튜브 제스처 제어는 영어 호출어 **SENA**를 들은 뒤 전면 카메라를 몇 초 열고, 손 모양으로 유튜브에 명령을 보냅니다. 손바닥을 펼치면 일시정지, 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어지고, 계정이나 API 키는 없습니다.
+
+명령은 유튜브 앱 패키지 `com.google.android.youtube`로만 갑니다. 유튜브가 미디어 세션을 내놓고 알림 접근이 켜져 있는 일반 동영상을 대상으로 합니다. 호출어 한 번에는 명령을 한 번만 보냅니다. 손바닥은 항상 일시정지이고, 엄지는 항상 재생입니다.
+
+손바닥 일시정지와 엄지 재생은 폰에서 확인했습니다. 영어 녹음으로 **SENA**가 잡히는 것까지는 확인했고, 폰에 직접 말한 뒤 카메라가 열리는 흐름은 아직 확인하지 않았습니다.
+
+마이크 소리는 호출어를 판정하는 데만 쓰고, 카메라 화면은 손 모양을 판정하는 데만 씁니다. 둘 다 파일로 저장하거나 올리지 않습니다. 알림 접근은 유튜브 미디어 세션을 찾는 데 씁니다.
+
+### 사용 방법
+
+Android 8.0 이상, 전면 카메라, 마이크, 유튜브 앱이 필요합니다. 이 프로젝트의 디버그 APK는 `app/build/outputs/apk/debug/app-debug.apk` 입니다. 빌드 명령은 [개발 참고](#개발-참고)에 있습니다.
+
+1. **유튜브 제스처 제어**를 설치하고 엽니다.
+2. **권한 요청**을 눌러 카메라, 마이크, Android 13 이상이면 알림을 허용합니다.
+3. **알림 접근 설정**을 눌러 이 앱을 켠 뒤 돌아옵니다. 안드로이드는 이 접근을 허용한 앱에만 다른 앱의 미디어 세션 목록을 보여 줍니다. 이 앱은 그 목록에서 유튜브를 찾아 일시정지 또는 재생을 요청합니다.
+4. 선택 사항: **화면 위 표시 설정**에서 이 앱을 허용합니다. **SENA**가 들리면 유튜브 위에 파란 표시가 잠깐 뜨고 짧게 진동합니다. 그 표시는 터치를 받지 않습니다. 허용하지 않아도 제어는 시작되고, 호출어는 상태 알림으로 알려 줍니다.
+5. 유튜브를 열고 일반 동영상을 재생합니다.
+6. 이 앱 화면이 보이는 상태에서 **제어 시작**을 누릅니다. 시작은 그 화면이 보일 때만 됩니다. 부팅할 때 저절로 켜지지 않습니다.
+7. 유튜브로 돌아갑니다. 상태 알림은 남아 있습니다. 호출어를 기다리는 동안에는 카메라를 열지 않습니다.
+8. 영어로 **SENA**라고 말한 뒤 잠깐 멈춥니다. 상태가 마이크가 조용하다고 하면 폰에 더 가까이에서 말합니다.
+9. 약 10초 안에 전면 카메라에 손 하나를 보여 줍니다.
+   - 손가락을 편 손바닥: 일시정지.
+   - 엄지: 재생.
+   같은 모양을 약 0.25초 유지합니다. 카메라가 닫히고 유튜브에 명령이 간 뒤, 다시 **SENA**를 기다립니다.
+10. 끝나면 앱이나 알림의 **제어 중지**를 누릅니다. 알림 권한이 없으면 앱으로 돌아와 그 버튼을 누릅니다.
+
+10초 안에 손 모양이 확인되지 않으면 명령을 보내지 않고 다시 **SENA**를 기다립니다. 유튜브 세션이 없으면 화면에 그 내용이 나옵니다. 일반 동영상을 재생한 뒤 다시 말하면 됩니다.
+
+## License
+
+The source code of this repository is released under the [MIT License](LICENSE). Copyright (c) 2026 neskafe3112.
+
+Bundled models and third-party libraries stay under their own upstream licenses. That includes the sherpa-onnx keyword model, the MediaPipe gesture model, and the Android, ONNX Runtime, sherpa-onnx, and MediaPipe dependencies. This MIT grant covers this app's own source code.
+
+이 저장소의 소스 코드는 [MIT 라이선스](LICENSE)로 공개합니다. Copyright (c) 2026 neskafe3112.
+
+함께 넣은 모델과 서드파티 라이브러리는 각자의 업스트림 라이선스를 유지합니다. sherpa-onnx 키워드 모델, MediaPipe 제스처 모델, 그리고 Android, ONNX Runtime, sherpa-onnx, MediaPipe 의존성이 여기에 해당합니다. 이 MIT 허가는 이 앱 자신의 소스 코드에 적용됩니다.
+
+## 개발 참고
 
 안드로이드에 설치된 유튜브 앱의 재생을 손 동작으로 일시정지하거나 다시 재생하는 Kotlin 앱입니다. 이 앱은 영상을 재생하지 않고, 유튜브를 내장하지 않으며, 영상을 내려받지도 않습니다.
 
