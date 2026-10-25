@@ -353,7 +353,7 @@ class SherpaWakeWordDetector(
                 modelType = "zipformer2",
             ),
             keywordsFile = WakeWordModels.KEYWORDS,
-            maxActivePaths = 4,
+            maxActivePaths = 8,
             keywordsScore = KEYWORD_SCORE,
             keywordsThreshold = KEYWORD_THRESHOLD,
             // 0이면 단어가 끝나는 공백을 더 기다리지 않고 바로 확정합니다.
@@ -383,8 +383,8 @@ class SherpaWakeWordDetector(
         private const val LEVEL_LOG_INTERVAL_MS = 2000L
         private const val SPEECH_PEAK = 2000
         private const val QUIET_WINDOWS = 3
-        private const val KEYWORD_SCORE = 2.0f
-        private const val KEYWORD_THRESHOLD = 0.2f
+        private const val KEYWORD_SCORE = 2.5f
+        private const val KEYWORD_THRESHOLD = 0.12f
 
         private val CANDIDATES = listOf(
             RecorderCandidate(MediaRecorder.AudioSource.VOICE_RECOGNITION, SAMPLE_RATE, "VOICE_RECOGNITION"),
