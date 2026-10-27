@@ -32,10 +32,7 @@ class YoutubeController(
             if (requestSent) {
                 PlaybackRequestResult.ConfirmationTimedOut(command)
             } else {
-                PlaybackRequestResult.Failed(
-                    command,
-                    "미디어 세션 응답이 제한 시간 안에 끝나지 않았습니다.",
-                )
+                PlaybackRequestResult.ResponseTimedOut
             }
         } catch (error: CancellationException) {
             throw error
@@ -98,10 +95,7 @@ class YoutubeController(
     ): PlaybackRequestResult {
         val before = controller.playbackState
         if (before == null) {
-            return PlaybackRequestResult.Failed(
-                command,
-                "유튜브 세션은 있지만 재생 상태를 읽지 못했습니다. 일시정지 중에는 세션이 비어 있을 수 있습니다.",
-            )
+            return PlaybackRequestResult.PlaybackStateUnreadable
         }
         if (!supports(before, command)) {
             return PlaybackRequestResult.ActionUnsupported(command)

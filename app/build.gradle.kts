@@ -43,6 +43,13 @@ android {
         viewBinding = true
     }
 
+    bundle {
+        language {
+            // 앱 안에서 언어를 바꾸므로, 번들로 만들 때 언어별 분할을 끄면 네 언어가 함께 들어갑니다.
+            enableSplit = false
+        }
+    }
+
     androidResources {
         // sherpa-onnx가 assets의 모델을 직접 읽으므로 onnx는 압축하지 않습니다.
         noCompress += "onnx"

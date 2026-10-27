@@ -8,10 +8,14 @@ import android.os.Build
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
 import com.example.youtubegesturecontrol.AssetFiles
+import com.example.youtubegesturecontrol.R
+import com.example.youtubegesturecontrol.UserNotice
 import com.example.youtubegesturecontrol.gesture.GestureAnalyzer
 import com.example.youtubegesturecontrol.media.YoutubeSessionSelector
 import com.example.youtubegesturecontrol.wakeword.WakeWordConfigLoader
+import com.example.youtubegesturecontrol.wakeword.WakeWordModels
 import com.example.youtubegesturecontrol.wakeword.WakeWordStatus
+import com.example.youtubegesturecontrol.withBreakableTokens
 
 /**
  * 제어를 시작하기 전에 권한과 설정을 다시 확인합니다.
@@ -37,22 +41,22 @@ class PrerequisiteChecker(
         )
     }
 
-    fun blockingProblem(): String? {
+    fun blockingProblem(): UserNotice? {
         if (!modelInstalled()) {
-            return "제스처 모델 파일이 없습니다. assets/${GestureAnalyzer.MODEL_ASSET_PATH} 를 확인하세요."
+            return UserNotice.ModelMissing(GestureAnalyzer.MODEL_ASSET_PATH)
         }
         if (!isGranted(Manifest.permission.CAMERA)) {
-            return "카메라 권한이 없습니다."
+            return UserNotice.CameraPermissionMissing
         }
         if (!isGranted(Manifest.permission.RECORD_AUDIO)) {
-            return "마이크 권한이 없습니다."
+            return UserNotice.MicrophonePermissionMissing
         }
         if (!listenerEnabled()) {
-            return "알림 접근이 꺼져 있어 유튜브 세션을 볼 수 없습니다."
+            return UserNotice.NotificationListenerOff
         }
         val wakeWord = WakeWordConfigLoader.status(context)
         if (!wakeWord.configured) {
-            return wakeWord.detail
+            return UserNotice.WakeWordModelMissing(wakeWord.missingAssets.joinToString(", "))
         }
         return null
     }
@@ -72,37 +76,57 @@ class PrerequisiteChecker(
     }
 
     fun describe(report: PrerequisiteReport): String {
+        val phrase = if (report.wakeWord.configured) {
+            WakeWordModels.PHRASE
+        } else {
+            context.getString(R.string.wake_word_unconfigured)
+        }
+        val detail = if (report.wakeWord.configured) {
+            context.getString(R.string.wake_word_detail, WakeWordModels.PHRASE)
+        } else {
+            context.getString(R.string.wake_word_missing, report.wakeWord.missingAssets.joinToString(", "))
+        }
         return buildString {
-            appendLine(permissionLine("카메라", report.cameraGranted))
-            appendLine(permissionLine("마이크", report.microphoneGranted))
+            appendLine(permissionLine(context.getString(R.string.perm_camera), report.cameraGranted))
+            appendLine(permissionLine(context.getString(R.string.perm_microphone), report.microphoneGranted))
             if (report.notificationPermissionRequired) {
-                appendLine(permissionLine("알림 게시", report.notificationsGranted))
-                appendLine("알림 게시는 우리 상태 알림용입니다. 알림 접근과는 다릅니다.")
+                appendLine(permissionLine(context.getString(R.string.perm_notifications), report.notificationsGranted))
+                appendLine(context.getString(R.string.notifications_difference))
             } else {
-                appendLine("알림 게시: 이 버전에서는 별도의 런타임 요청이 없습니다.")
+                appendLine(context.getString(R.string.notifications_not_required))
             }
-            appendLine(if (report.listenerEnabled) "알림 접근: 허용됨" else "알림 접근: 꺼짐")
+            appendLine(
+                if (report.listenerEnabled) {
+                    context.getString(R.string.listener_on)
+                } else {
+                    context.getString(R.string.listener_off)
+                },
+            )
             appendLine(
                 if (report.modelInstalled) {
-                    "제스처 모델: 있음"
+                    context.getString(R.string.model_present)
                 } else {
-                    "제스처 모델: 없음"
+                    context.getString(R.string.model_absent)
                 },
             )
             appendLine(
                 if (report.youtubeInstalled) {
-                    "유튜브 앱: 설치됨"
+                    context.getString(R.string.youtube_installed)
                 } else {
-                    "유튜브 앱: 설치를 확인하지 못함"
+                    context.getString(R.string.youtube_missing)
                 },
             )
-            append("호출어: ${report.wakeWord.phraseLabel}. ${report.wakeWord.detail}")
+            append(context.getString(R.string.wake_word_line, phrase, detail))
             if (report.permanentlyDenied.isNotEmpty()) {
-                append("\n다시 묻지 않도록 거부됨: ")
-                append(report.permanentlyDenied.joinToString(", ") { permissionLabel(it) })
-                append(". 앱 설정에서 허용해야 합니다.")
+                append("\n")
+                append(
+                    context.getString(
+                        R.string.permanently_denied_line,
+                        report.permanentlyDenied.joinToString(", ") { permissionLabel(it) },
+                    ),
+                )
             }
-        }
+        }.withBreakableTokens()
     }
 
     private fun isPermanentlyDenied(
@@ -143,16 +167,18 @@ class PrerequisiteChecker(
     }
 
     private fun permissionLine(name: String, granted: Boolean): String {
-        return if (granted) "$name: 허용됨" else "$name: 아직 허용되지 않음"
+        val resId = if (granted) R.string.perm_granted else R.string.perm_denied
+        return context.getString(resId, name)
     }
 
     private fun permissionLabel(permission: String): String {
-        return when (permission) {
-            Manifest.permission.CAMERA -> "카메라"
-            Manifest.permission.RECORD_AUDIO -> "마이크"
-            Manifest.permission.POST_NOTIFICATIONS -> "알림 게시"
-            else -> permission
+        val resId = when (permission) {
+            Manifest.permission.CAMERA -> R.string.perm_camera
+            Manifest.permission.RECORD_AUDIO -> R.string.perm_microphone
+            Manifest.permission.POST_NOTIFICATIONS -> R.string.perm_notifications
+            else -> return permission
         }
+        return context.getString(resId)
     }
 }
 

@@ -10,7 +10,7 @@ import android.os.Looper
 import android.os.Process
 import android.os.SystemClock
 import android.util.Log
-import com.example.youtubegesturecontrol.UserMessages
+import com.example.youtubegesturecontrol.UserNotice
 import com.k2fsa.sherpa.onnx.FeatureConfig
 import com.k2fsa.sherpa.onnx.KeywordSpotter
 import com.k2fsa.sherpa.onnx.KeywordSpotterConfig
@@ -35,9 +35,9 @@ class SherpaWakeWordDetector(
     private val engineLock = Any()
 
     private var onDetected: (() -> Unit)? = null
-    private var onError: ((String) -> Unit)? = null
-    private var onDetail: ((String) -> Unit)? = null
-    private var lastDetail: String? = null
+    private var onError: ((UserNotice) -> Unit)? = null
+    private var onDetail: ((UserNotice) -> Unit)? = null
+    private var lastDetail: UserNotice? = null
     private var spotter: KeywordSpotter? = null
     private var stream: OnlineStream? = null
     private var audioRecord: AudioRecord? = null
@@ -52,8 +52,8 @@ class SherpaWakeWordDetector(
 
     override fun prepare(
         onDetected: () -> Unit,
-        onError: (String) -> Unit,
-        onDetail: (String) -> Unit,
+        onError: (UserNotice) -> Unit,
+        onDetail: (UserNotice) -> Unit,
     ) {
         this.onDetected = onDetected
         this.onError = onError
@@ -75,7 +75,7 @@ class SherpaWakeWordDetector(
             return
         }
         if (spotter == null || stream == null) {
-            throw IllegalStateException("호출어 엔진이 준비되지 않았습니다.")
+            throw IllegalStateException("wake-word engine is not prepared")
         }
         acceptDetections = true
         listening = true
@@ -111,8 +111,8 @@ class SherpaWakeWordDetector(
         val opened = openRecorder()
         if (opened == null) {
             listening = false
-            postDetail(UserMessages.MICROPHONE_UNAVAILABLE)
-            postError(UserMessages.MICROPHONE_UNAVAILABLE)
+            postDetail(UserNotice.MicrophoneUnavailable)
+            postError(UserNotice.MicrophoneUnavailable)
             return
         }
         audioRecord = opened.recorder
@@ -121,7 +121,7 @@ class SherpaWakeWordDetector(
             TAG,
             "마이크를 열었습니다. source=${opened.sourceName} 요청=${opened.requestedRate} 실제=$inputSampleRate",
         )
-        postDetail(UserMessages.MICROPHONE_OPENED)
+        postDetail(UserNotice.MicrophoneOpened)
         val buffer = ShortArray(frameSamples(inputSampleRate))
         val samples = FloatArray(buffer.size)
         var windowPeak = 0
@@ -151,11 +151,11 @@ class SherpaWakeWordDetector(
                     if (windowPeak >= SPEECH_PEAK) {
                         heardSpeech = true
                         quietWindows = 0
-                        postDetail(UserMessages.MICROPHONE_HEARING)
+                        postDetail(UserNotice.MicrophoneHearing)
                     } else if (!heardSpeech) {
                         quietWindows += 1
                         if (quietWindows >= QUIET_WINDOWS) {
-                            postDetail(UserMessages.MICROPHONE_QUIET)
+                            postDetail(UserNotice.MicrophoneQuiet)
                         }
                     }
                     windowPeak = 0
@@ -321,7 +321,7 @@ class SherpaWakeWordDetector(
         recorder.release()
     }
 
-    private fun postDetail(detail: String) {
+    private fun postDetail(detail: UserNotice) {
         if (detail == lastDetail) {
             return
         }
@@ -330,7 +330,7 @@ class SherpaWakeWordDetector(
         mainHandler.post { callback(detail) }
     }
 
-    private fun postError(message: String) {
+    private fun postError(message: UserNotice) {
         val callback = onError ?: return
         mainHandler.post { callback(message) }
     }

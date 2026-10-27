@@ -7,9 +7,12 @@ import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -21,6 +24,7 @@ import com.example.youtubegesturecontrol.service.ControlService
 import com.example.youtubegesturecontrol.service.ControlSnapshot
 import com.example.youtubegesturecontrol.service.ControlState
 import com.example.youtubegesturecontrol.service.isServiceActive
+import com.example.youtubegesturecontrol.wakeword.WakeWordModels
 import kotlinx.coroutines.launch
 
 /**
@@ -40,15 +44,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val bars = insets.getInsets(
+                WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout(),
+            )
+            view.setPadding(bars.left, bars.top, bars.right, bars.bottom)
+            WindowInsetsCompat.CONSUMED
+        }
+        binding.languageButton.setOnClickListener { chooseLanguage() }
+        binding.appearanceButton.setOnClickListener { chooseAppearance() }
         binding.requestPermissionsButton.setOnClickListener { requestPermissionsForControl() }
         binding.appSettingsButton.setOnClickListener { openAppSettings() }
         binding.notificationAccessButton.setOnClickListener { explainNotificationAccess() }
         binding.overlaySettingsButton.setOnClickListener { explainOverlay() }
         binding.startControlButton.setOnClickListener { onStartClicked() }
         binding.stopControlButton.setOnClickListener { ControlService.stop(this) }
+        updateDisplayChoices()
         collectServiceState()
     }
 
@@ -56,6 +71,9 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         // 설정 화면에서 돌아온 뒤 알림 접근과 권한을 다시 읽습니다.
         render()
+        if (snapshot.state.isServiceActive()) {
+            ControlService.refreshText(this)
+        }
     }
 
     private fun collectServiceState() {
@@ -88,7 +106,12 @@ class MainActivity : AppCompatActivity() {
             return
         }
         if (!report.wakeWord.configured) {
-            showMessage(report.wakeWord.detail)
+            showMessage(
+                getString(
+                    R.string.wake_word_missing,
+                    report.wakeWord.missingAssets.joinToString(", "),
+                ),
+            )
             return
         }
         if (!report.modelInstalled) {
@@ -179,20 +202,68 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun chooseLanguage() {
+        val labels = DisplayPreferences.languageChoiceLabels(this)
+        val checked = DisplayPreferences.currentLanguageIndex()
+        val items = Array<CharSequence>(labels.size) { index -> labels[index] }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.choose_language)
+            .setSingleChoiceItems(items, checked) { dialog, which ->
+                dialog.dismiss()
+                if (which != checked) {
+                    DisplayPreferences.setLanguage(which)
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun chooseAppearance() {
+        val labels = DisplayPreferences.appearanceChoiceLabels(this)
+        val checked = DisplayPreferences.currentAppearanceIndex(this)
+        val items = Array<CharSequence>(labels.size) { index -> labels[index] }
+        AlertDialog.Builder(this)
+            .setTitle(R.string.choose_appearance)
+            .setSingleChoiceItems(items, checked) { dialog, which ->
+                dialog.dismiss()
+                if (which != checked) {
+                    DisplayPreferences.setAppearanceIndex(this, which)
+                }
+            }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun updateDisplayChoices() {
+        val languages = DisplayPreferences.languageChoiceLabels(this)
+        val appearances = DisplayPreferences.appearanceChoiceLabels(this)
+        binding.languageButton.text = getString(
+            R.string.language_button,
+            languages[DisplayPreferences.currentLanguageIndex()],
+        )
+        binding.appearanceButton.text = getString(
+            R.string.appearance_button,
+            appearances[DisplayPreferences.currentAppearanceIndex(this)],
+        )
+    }
+
     private fun render() {
         val report = currentReport()
+        updateDisplayChoices()
         binding.permissionStatus.text = checker.describe(report)
-        binding.wakeWordStatus.text = getString(
-            R.string.wake_word_status,
-            report.wakeWord.phraseLabel,
-        )
+        val phrase = if (report.wakeWord.configured) {
+            WakeWordModels.PHRASE
+        } else {
+            getString(R.string.wake_word_unconfigured)
+        }
+        binding.wakeWordStatus.text = getString(R.string.wake_word_status, phrase)
         val state = snapshot.state
         binding.serviceState.text = if (state is ControlState.Error) {
-            UserMessages.stateLabel(state) + "\n" + state.message
+            controlStateLabel(state) + "\n" + noticeText(state.notice)
         } else {
-            UserMessages.stateLabel(state)
+            controlStateLabel(state)
         }
-        binding.recentResult.text = snapshot.recentResult
+        binding.recentResult.text = noticeText(snapshot.recentResult)
         binding.startControlButton.isEnabled = !state.isServiceActive() && report.canStartWakeWordControl()
         binding.stopControlButton.isEnabled = state.isServiceActive()
         binding.notificationWarning.isVisible = report.notificationPermissionRequired && !report.notificationsGranted

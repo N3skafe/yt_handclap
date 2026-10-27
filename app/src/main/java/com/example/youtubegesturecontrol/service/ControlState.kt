@@ -1,5 +1,6 @@
 package com.example.youtubegesturecontrol.service
 
+import com.example.youtubegesturecontrol.UserNotice
 import com.example.youtubegesturecontrol.media.PlaybackCommand
 
 /**
@@ -34,7 +35,7 @@ sealed class ControlState {
         val returnToWakeWord: Boolean,
         val pendingCommand: PlaybackCommand?,
         val fatal: Boolean,
-        val message: String,
+        val notice: UserNotice,
     ) : ControlState()
 
     data class DispatchingCommand(
@@ -43,7 +44,7 @@ sealed class ControlState {
         val returnToWakeWord: Boolean,
     ) : ControlState()
 
-    data class Error(val message: String) : ControlState()
+    data class Error(val notice: UserNotice) : ControlState()
 }
 
 fun ControlState.isServiceActive(): Boolean {
@@ -82,10 +83,12 @@ sealed interface ControlEffect {
     ) : ControlEffect
 
     data object StopService : ControlEffect
+
+    data object ShowWakeWordHeard : ControlEffect
 }
 
 data class MachineStep(
     val state: ControlState,
     val effects: List<ControlEffect> = emptyList(),
-    val recentResult: String? = null,
+    val recentResult: UserNotice? = null,
 )

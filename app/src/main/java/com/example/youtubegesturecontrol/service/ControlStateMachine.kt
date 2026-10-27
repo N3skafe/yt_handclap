@@ -1,7 +1,7 @@
 package com.example.youtubegesturecontrol.service
 
 import com.example.youtubegesturecontrol.ControlTimeouts
-import com.example.youtubegesturecontrol.UserMessages
+import com.example.youtubegesturecontrol.UserNotice
 import com.example.youtubegesturecontrol.gesture.HandGesture
 import com.example.youtubegesturecontrol.media.PlaybackCommand
 
@@ -27,18 +27,18 @@ class ControlStateMachine(
         consecutiveCameraFailures = 0
         consecutiveRecognizerFailures = 0
         state = ControlState.Starting
-        return MachineStep(state = state, recentResult = UserMessages.STARTING)
+        return MachineStep(state = state, recentResult = UserNotice.Starting)
     }
 
-    fun onPrerequisitesFailed(message: String): MachineStep {
+    fun onPrerequisitesFailed(notice: UserNotice): MachineStep {
         if (state !is ControlState.Starting) {
             return unchanged()
         }
-        state = ControlState.Error(message)
+        state = ControlState.Error(notice)
         return MachineStep(
             state = state,
             effects = listOf(ControlEffect.ReleaseWakeWord, ControlEffect.StopService),
-            recentResult = message,
+            recentResult = notice,
         )
     }
 
@@ -50,7 +50,7 @@ class ControlStateMachine(
         return MachineStep(
             state = state,
             effects = listOf(ControlEffect.ResumeWakeWord),
-            recentResult = UserMessages.WAITING_FOR_WAKE_WORD,
+            recentResult = UserNotice.WaitingForWakeWord,
         )
     }
 
@@ -58,11 +58,12 @@ class ControlStateMachine(
         if (state !is ControlState.WaitingForWakeWord) {
             return unchanged()
         }
-        return beginCameraSession(
+        val step = beginCameraSession(
             returnToWakeWord = true,
             suspendWakeWord = true,
-            recentResult = UserMessages.WAKE_WORD_HEARD,
+            recentResult = UserNotice.WakeWordHeard,
         )
+        return step.copy(effects = listOf(ControlEffect.ShowWakeWordHeard) + step.effects)
     }
 
     fun onCameraReady(sessionId: Long): MachineStep {
@@ -85,13 +86,12 @@ class ControlStateMachine(
         )
     }
 
-    fun onCameraStartFailed(sessionId: Long, reason: String): MachineStep {
+    fun onCameraStartFailed(sessionId: Long, notice: UserNotice): MachineStep {
         val opening = state as? ControlState.OpeningCamera ?: return unchanged()
         if (opening.sessionId != sessionId) {
             return unchanged()
         }
         consecutiveCameraFailures += 1
-        val message = UserMessages.cameraStartFailed(reason)
         val fatal = !opening.returnToWakeWord ||
             consecutiveCameraFailures >= maxConsecutiveCameraFailures
         return enterCleanup(
@@ -99,7 +99,7 @@ class ControlStateMachine(
             returnToWakeWord = opening.returnToWakeWord,
             pendingCommand = null,
             fatal = fatal,
-            message = message,
+            notice = notice,
         )
     }
 
@@ -114,7 +114,7 @@ class ControlStateMachine(
             returnToWakeWord = recognizing.returnToWakeWord,
             pendingCommand = playbackCommandFor(gesture),
             fatal = false,
-            message = UserMessages.gestureConfirmed(gesture),
+            notice = UserNotice.GestureConfirmed(gesture),
         )
     }
 
@@ -129,7 +129,7 @@ class ControlStateMachine(
             returnToWakeWord = recognizing.returnToWakeWord,
             pendingCommand = null,
             fatal = false,
-            message = UserMessages.RECOGNITION_TIMEOUT,
+            notice = UserNotice.RecognitionTimeout,
         )
     }
 
@@ -154,7 +154,6 @@ class ControlStateMachine(
             else -> return unchanged()
         }
         consecutiveRecognizerFailures += 1
-        val message = UserMessages.recognizerFailed(reason)
         val fatal = initializationFailed ||
             !returnToWakeWord ||
             consecutiveRecognizerFailures >= maxConsecutiveRecognizerFailures
@@ -163,7 +162,7 @@ class ControlStateMachine(
             returnToWakeWord = returnToWakeWord,
             pendingCommand = null,
             fatal = fatal,
-            message = message,
+            notice = UserNotice.RecognizerFailed(reason),
         )
     }
 
@@ -187,11 +186,11 @@ class ControlStateMachine(
         return finishSession(
             returnToWakeWord = cleaning.returnToWakeWord,
             fatal = cleaning.fatal,
-            message = cleaning.message,
+            notice = cleaning.notice,
         )
     }
 
-    fun onCommandCompleted(sessionId: Long, resultMessage: String): MachineStep {
+    fun onCommandCompleted(sessionId: Long, notice: UserNotice): MachineStep {
         val dispatching = state as? ControlState.DispatchingCommand ?: return unchanged()
         if (dispatching.sessionId != sessionId) {
             return unchanged()
@@ -199,17 +198,17 @@ class ControlStateMachine(
         return finishSession(
             returnToWakeWord = dispatching.returnToWakeWord,
             fatal = false,
-            message = resultMessage,
+            notice = notice,
         )
     }
 
-    fun onUnrecoverable(message: String): MachineStep {
+    fun onUnrecoverable(notice: UserNotice): MachineStep {
         if (state is ControlState.Stopped || state is ControlState.Error) {
-            state = ControlState.Error(message)
-            return MachineStep(state = state, recentResult = message)
+            state = ControlState.Error(notice)
+            return MachineStep(state = state, recentResult = notice)
         }
         newSession()
-        state = ControlState.Error(message)
+        state = ControlState.Error(notice)
         return MachineStep(
             state = state,
             effects = listOf(
@@ -218,7 +217,7 @@ class ControlStateMachine(
                 ControlEffect.ReleaseWakeWord,
                 ControlEffect.StopService,
             ),
-            recentResult = message,
+            recentResult = notice,
         )
     }
 
@@ -238,14 +237,14 @@ class ControlStateMachine(
                 ControlEffect.ReleaseWakeWord,
                 ControlEffect.StopService,
             ),
-            recentResult = UserMessages.STOPPED,
+            recentResult = UserNotice.Stopped,
         )
     }
 
     private fun beginCameraSession(
         returnToWakeWord: Boolean,
         suspendWakeWord: Boolean,
-        recentResult: String,
+        recentResult: UserNotice,
     ): MachineStep {
         val sessionId = newSession()
         state = ControlState.OpeningCamera(
@@ -266,14 +265,14 @@ class ControlStateMachine(
         returnToWakeWord: Boolean,
         pendingCommand: PlaybackCommand?,
         fatal: Boolean,
-        message: String,
+        notice: UserNotice,
     ): MachineStep {
         state = ControlState.CleaningUp(
             sessionId = sessionId,
             returnToWakeWord = returnToWakeWord,
             pendingCommand = pendingCommand,
             fatal = fatal,
-            message = message,
+            notice = notice,
         )
         return MachineStep(
             state = state,
@@ -281,28 +280,28 @@ class ControlStateMachine(
                 ControlEffect.CancelSessionTimers(sessionId),
                 ControlEffect.CloseCamera(sessionId),
             ),
-            recentResult = message,
+            recentResult = notice,
         )
     }
 
     private fun finishSession(
         returnToWakeWord: Boolean,
         fatal: Boolean,
-        message: String,
+        notice: UserNotice,
     ): MachineStep {
         if (fatal || !returnToWakeWord) {
-            state = if (fatal) ControlState.Error(message) else ControlState.Stopped
+            state = if (fatal) ControlState.Error(notice) else ControlState.Stopped
             return MachineStep(
                 state = state,
                 effects = listOf(ControlEffect.ReleaseWakeWord, ControlEffect.StopService),
-                recentResult = message,
+                recentResult = notice,
             )
         }
         state = ControlState.WaitingForWakeWord
         return MachineStep(
             state = state,
             effects = listOf(ControlEffect.ResumeWakeWord),
-            recentResult = message,
+            recentResult = notice,
         )
     }
 

@@ -255,7 +255,7 @@ class GestureAnalyzer(
             }
         }
         if (!AssetFiles.exists(appContext, MODEL_ASSET_PATH)) {
-            throw IllegalStateException("assets/$MODEL_ASSET_PATH 파일이 없습니다.")
+            throw IllegalStateException("assets/$MODEL_ASSET_PATH")
         }
         val baseOptions = BaseOptions.builder()
             .setModelAssetPath(MODEL_ASSET_PATH)

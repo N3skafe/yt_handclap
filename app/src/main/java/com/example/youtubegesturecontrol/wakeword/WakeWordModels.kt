@@ -6,8 +6,7 @@ package com.example.youtubegesturecontrol.wakeword
  */
 data class WakeWordStatus(
     val configured: Boolean,
-    val phraseLabel: String,
-    val detail: String,
+    val missingAssets: List<String> = emptyList(),
 )
 
 /**
@@ -41,15 +40,9 @@ object WakeWordModels {
         if (missingAssets.isNotEmpty()) {
             return WakeWordStatus(
                 configured = false,
-                phraseLabel = "설정되지 않음",
-                detail = "호출어 모델 파일이 없습니다: ${missingAssets.joinToString(", ")}",
+                missingAssets = missingAssets,
             )
         }
-        return WakeWordStatus(
-            configured = true,
-            phraseLabel = PHRASE,
-            detail = "영어 호출어입니다. \"$PHRASE\" 라고 말하면 카메라가 열립니다. " +
-                "음성은 기기 안에서만 확인하고 올리지 않습니다.",
-        )
+        return WakeWordStatus(configured = true)
     }
 }

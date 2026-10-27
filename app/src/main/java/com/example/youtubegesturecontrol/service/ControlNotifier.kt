@@ -10,9 +10,12 @@ import android.content.pm.ServiceInfo
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
+import com.example.youtubegesturecontrol.AppLocales
 import com.example.youtubegesturecontrol.MainActivity
 import com.example.youtubegesturecontrol.R
-import com.example.youtubegesturecontrol.UserMessages
+import com.example.youtubegesturecontrol.UserNotice
+import com.example.youtubegesturecontrol.controlStateLabel
+import com.example.youtubegesturecontrol.noticeText
 import com.example.youtubegesturecontrol.wakeword.WakeWordModels
 
 /**
@@ -23,19 +26,21 @@ class ControlNotifier(
     private val service: Service,
 ) {
     private val wakeWordBanner = WakeWordBanner(service)
-    fun startForeground(label: String, detail: String) {
-        ensureChannel()
+
+    fun startForeground(state: ControlState, notice: UserNotice) {
+        ensureChannels()
         ServiceCompat.startForeground(
             service,
             NOTIFICATION_ID,
-            build(label, detail),
+            build(state, notice),
             foregroundTypes(),
         )
     }
 
-    fun update(label: String, detail: String) {
+    fun update(state: ControlState, notice: UserNotice) {
+        ensureChannels()
         val manager = service.getSystemService(NotificationManager::class.java)
-        manager.notify(NOTIFICATION_ID, build(label, detail))
+        manager.notify(NOTIFICATION_ID, build(state, notice))
     }
 
     /**
@@ -43,7 +48,7 @@ class ControlNotifier(
      * 다른 앱 위 그리기가 없으면 알림 배너로 대신합니다.
      */
     fun showWakeWordHeard() {
-        ensureAlertChannel()
+        ensureChannels()
         if (!wakeWordBanner.show()) {
             val manager = service.getSystemService(NotificationManager::class.java)
             manager.notify(ALERT_NOTIFICATION_ID, buildWakeAlert())
@@ -57,26 +62,28 @@ class ControlNotifier(
         ServiceCompat.stopForeground(service, ServiceCompat.STOP_FOREGROUND_REMOVE)
     }
 
-    private fun build(label: String, detail: String): Notification {
+    private fun build(state: ControlState, notice: UserNotice): Notification {
+        val text = AppLocales.wrap(service)
         return NotificationCompat.Builder(service, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_gesture)
-            .setContentTitle(service.getString(R.string.app_title))
-            .setContentText(label)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(detail))
+            .setContentTitle(text.getString(R.string.app_title))
+            .setContentText(text.controlStateLabel(state))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(text.noticeText(notice)))
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             // 안드로이드 14는 이 값을 주지 않으면 포그라운드 알림 표시를 늦출 수 있습니다.
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
             .setContentIntent(openAppIntent())
-            .addAction(R.drawable.ic_stat_gesture, "제어 중지", stopIntent())
+            .addAction(R.drawable.ic_stat_gesture, text.getString(R.string.stop_control), stopIntent())
             .build()
     }
 
     private fun buildWakeAlert(): Notification {
+        val text = AppLocales.wrap(service)
         return NotificationCompat.Builder(service, ALERT_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_stat_gesture)
             .setContentTitle(WakeWordModels.PHRASE)
-            .setContentText(UserMessages.WAKE_WORD_HEARD)
+            .setContentText(text.noticeText(UserNotice.WakeWordHeard))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_STATUS)
             .setAutoCancel(true)
@@ -86,27 +93,24 @@ class ControlNotifier(
             .build()
     }
 
-    private fun ensureChannel() {
+    private fun ensureChannels() {
+        val text = AppLocales.wrap(service)
         val manager = service.getSystemService(NotificationManager::class.java)
-        val channel = NotificationChannel(
+        val status = NotificationChannel(
             CHANNEL_ID,
-            "유튜브 제스처 제어",
+            text.getString(R.string.app_title),
             NotificationManager.IMPORTANCE_LOW,
         )
-        channel.description = "호출어 대기와 제스처 인식 상태를 보여 줍니다."
-        manager.createNotificationChannel(channel)
-    }
-
-    private fun ensureAlertChannel() {
-        val manager = service.getSystemService(NotificationManager::class.java)
-        val channel = NotificationChannel(
+        status.description = text.getString(R.string.channel_control_description)
+        manager.createNotificationChannel(status)
+        val alert = NotificationChannel(
             ALERT_CHANNEL_ID,
-            "호출어 확인",
+            text.getString(R.string.channel_alert_name),
             NotificationManager.IMPORTANCE_HIGH,
         )
-        channel.description = "호출어가 들리면 화면 위에 잠깐 알려 줍니다."
-        channel.enableVibration(false)
-        manager.createNotificationChannel(channel)
+        alert.description = text.getString(R.string.channel_alert_description)
+        alert.enableVibration(false)
+        manager.createNotificationChannel(alert)
     }
 
     /**

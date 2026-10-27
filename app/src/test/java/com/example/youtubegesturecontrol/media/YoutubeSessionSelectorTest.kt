@@ -1,5 +1,6 @@
 package com.example.youtubegesturecontrol.media
 
+import com.example.youtubegesturecontrol.UserNotice
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -50,30 +51,35 @@ class PlaybackMessageTest {
         val pause = PlaybackRequestResult.Confirmed(
             PlaybackCommand.PAUSE,
             alreadyInRequestedState = false,
-        ).toKorean()
+        ).toNotice()
         val play = PlaybackRequestResult.Confirmed(
             PlaybackCommand.PLAY,
             alreadyInRequestedState = false,
-        ).toKorean()
-        assertTrue(pause.contains("일시정지 요청"))
-        assertTrue(!pause.contains("재생 요청"))
-        assertTrue(play.contains("재생 요청"))
-        assertTrue(!play.contains("일시정지 요청"))
+        ).toNotice()
+        assertEquals(
+            UserNotice.PlaybackConfirmed(PlaybackCommand.PAUSE, alreadyInRequestedState = false),
+            pause,
+        )
+        assertEquals(
+            UserNotice.PlaybackConfirmed(PlaybackCommand.PLAY, alreadyInRequestedState = false),
+            play,
+        )
     }
 
     @Test
-    fun unsupportedMessageSaysToggleWasNotUsed() {
-        val message = PlaybackRequestResult.ActionUnsupported(PlaybackCommand.PAUSE).toKorean()
-        assertTrue(message.contains("토글로는 대체하지 않았습니다"))
+    fun unsupportedMessageKeepsTheCommand() {
+        val notice = PlaybackRequestResult.ActionUnsupported(PlaybackCommand.PAUSE).toNotice()
+        assertEquals(UserNotice.ActionUnsupported(PlaybackCommand.PAUSE), notice)
     }
 
     @Test
-    fun unavailableMessageNamesOtherPackagesWithoutControllingThem() {
-        val message = PlaybackRequestResult.SessionUnavailable(
+    fun unavailableMessageKeepsOtherPackages() {
+        val notice = PlaybackRequestResult.SessionUnavailable(
             listOf(YoutubeSessionSelector.YOUTUBE_MUSIC_PACKAGE_NAME),
-        ).toKorean()
-        assertTrue(message.contains(YoutubeSessionSelector.YOUTUBE_PACKAGE_NAME))
-        assertTrue(message.contains(YoutubeSessionSelector.YOUTUBE_MUSIC_PACKAGE_NAME))
-        assertTrue(message.contains("제어하지 않습니다"))
+        ).toNotice()
+        assertEquals(
+            UserNotice.SessionUnavailable(listOf(YoutubeSessionSelector.YOUTUBE_MUSIC_PACKAGE_NAME)),
+            notice,
+        )
     }
 }

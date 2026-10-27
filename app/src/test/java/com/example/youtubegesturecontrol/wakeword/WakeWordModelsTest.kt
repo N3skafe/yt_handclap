@@ -10,15 +10,13 @@ class WakeWordModelsTest {
     fun bundledModelIsConfiguredWithOneEnglishPhrase() {
         val status = WakeWordModels.status(emptyList())
         assertTrue(status.configured)
-        assertEquals(WakeWordModels.PHRASE, status.phraseLabel)
-        assertTrue(status.detail.contains("SENA"))
+        assertTrue(status.missingAssets.isEmpty())
     }
 
     @Test
     fun missingModelFileIsNotConfigured() {
         val status = WakeWordModels.status(listOf(WakeWordModels.ENCODER))
         assertFalse(status.configured)
-        assertEquals("설정되지 않음", status.phraseLabel)
-        assertTrue(status.detail.contains(WakeWordModels.ENCODER))
+        assertEquals(listOf(WakeWordModels.ENCODER), status.missingAssets)
     }
 }

@@ -15,5 +15,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "YouTubeGestureControl"
+rootProject.name = "SenaCue"
 include(":app")

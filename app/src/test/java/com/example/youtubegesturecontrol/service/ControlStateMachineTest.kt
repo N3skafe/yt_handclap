@@ -1,6 +1,6 @@
 package com.example.youtubegesturecontrol.service
 
-import com.example.youtubegesturecontrol.UserMessages
+import com.example.youtubegesturecontrol.UserNotice
 import com.example.youtubegesturecontrol.gesture.HandGesture
 import com.example.youtubegesturecontrol.media.PlaybackCommand
 import org.junit.Assert.assertEquals
@@ -16,6 +16,7 @@ class ControlStateMachineTest {
         startWakeWord(machine)
         val step = machine.onWakeWordDetected()
         assertTrue(step.state is ControlState.OpeningCamera)
+        assertTrue(step.effects.any { it is ControlEffect.ShowWakeWordHeard })
         assertTrue(step.effects.any { it is ControlEffect.OpenCamera })
         assertTrue(step.effects.none { it is ControlEffect.DispatchCommand })
     }
@@ -69,7 +70,7 @@ class ControlStateMachineTest {
         val machine = ControlStateMachine()
         val sessionId = recognize(machine)
         val timeout = machine.onRecognitionTimedOut(sessionId)
-        assertEquals(UserMessages.RECOGNITION_TIMEOUT, timeout.recentResult)
+        assertEquals(UserNotice.RecognitionTimeout, timeout.recentResult)
         assertTrue(timeout.effects.none { it is ControlEffect.DispatchCommand })
         val closed = machine.onCameraClosed(sessionId)
         assertTrue(closed.state is ControlState.WaitingForWakeWord)
@@ -124,7 +125,7 @@ class ControlStateMachineTest {
         val machine = ControlStateMachine()
         startWakeWord(machine)
         val sessionId = (machine.onWakeWordDetected().state as ControlState.OpeningCamera).sessionId
-        val failed = machine.onCameraStartFailed(sessionId, "in use")
+        val failed = machine.onCameraStartFailed(sessionId, UserNotice.CameraStartFailed("in use"))
         assertTrue(failed.effects.none { it is ControlEffect.OpenCamera })
         val closed = machine.onCameraClosed(sessionId)
         assertTrue(closed.state is ControlState.WaitingForWakeWord)
@@ -137,12 +138,12 @@ class ControlStateMachineTest {
         startWakeWord(machine)
         repeat(2) {
             val sessionId = (machine.onWakeWordDetected().state as ControlState.OpeningCamera).sessionId
-            machine.onCameraStartFailed(sessionId, "busy")
+            machine.onCameraStartFailed(sessionId, UserNotice.CameraStartFailed("busy"))
             val closed = machine.onCameraClosed(sessionId)
             assertTrue(closed.state is ControlState.WaitingForWakeWord)
         }
         val sessionId = (machine.onWakeWordDetected().state as ControlState.OpeningCamera).sessionId
-        machine.onCameraStartFailed(sessionId, "busy")
+        machine.onCameraStartFailed(sessionId, UserNotice.CameraStartFailed("busy"))
         val closed = machine.onCameraClosed(sessionId)
         assertTrue(closed.state is ControlState.Error)
         assertTrue(closed.effects.any { it is ControlEffect.StopService })
@@ -154,14 +155,14 @@ class ControlStateMachineTest {
         val machine = ControlStateMachine(maxConsecutiveCameraFailures = 2)
         startWakeWord(machine)
         val first = (machine.onWakeWordDetected().state as ControlState.OpeningCamera).sessionId
-        machine.onCameraStartFailed(first, "busy")
+        machine.onCameraStartFailed(first, UserNotice.CameraStartFailed("busy"))
         machine.onCameraClosed(first)
         val second = (machine.onWakeWordDetected().state as ControlState.OpeningCamera).sessionId
         machine.onCameraReady(second)
         machine.onRecognitionTimedOut(second)
         machine.onCameraClosed(second)
         val third = (machine.onWakeWordDetected().state as ControlState.OpeningCamera).sessionId
-        machine.onCameraStartFailed(third, "busy")
+        machine.onCameraStartFailed(third, UserNotice.CameraStartFailed("busy"))
         val closed = machine.onCameraClosed(third)
         assertTrue(closed.state is ControlState.WaitingForWakeWord)
     }
@@ -179,9 +180,13 @@ class ControlStateMachineTest {
     fun commandCompletionReturnsToWaiting() {
         val machine = ControlStateMachine()
         val dispatching = dispatchPause(machine)
-        val done = machine.onCommandCompleted(dispatching.sessionId, "완료")
+        val notice = UserNotice.PlaybackConfirmed(
+            PlaybackCommand.PAUSE,
+            alreadyInRequestedState = false,
+        )
+        val done = machine.onCommandCompleted(dispatching.sessionId, notice)
         assertTrue(done.state is ControlState.WaitingForWakeWord)
-        assertEquals("완료", done.recentResult)
+        assertEquals(notice, done.recentResult)
         assertTrue(done.effects.any { it is ControlEffect.ResumeWakeWord })
     }
 
@@ -190,7 +195,7 @@ class ControlStateMachineTest {
         val machine = ControlStateMachine()
         val dispatching = dispatchPause(machine)
         machine.requestStop()
-        val late = machine.onCommandCompleted(dispatching.sessionId, "늦게 도착")
+        val late = machine.onCommandCompleted(dispatching.sessionId, UserNotice.Stopped)
         assertTrue(late.effects.isEmpty())
         assertTrue(machine.state is ControlState.Stopped)
         assertNull(late.recentResult)
@@ -203,7 +208,7 @@ class ControlStateMachineTest {
         val ignored = machine.requestStart()
         assertTrue(ignored.effects.isEmpty())
         assertTrue(machine.state is ControlState.WaitingForWakeWord)
-        machine.onUnrecoverable("마이크 권한이 해제되었습니다.")
+        machine.onUnrecoverable(UserNotice.MicrophonePermissionMissing)
         val restarted = machine.requestStart()
         assertTrue(restarted.state is ControlState.Starting)
     }

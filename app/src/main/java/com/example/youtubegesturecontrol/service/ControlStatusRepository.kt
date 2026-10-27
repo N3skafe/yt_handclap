@@ -1,6 +1,6 @@
 package com.example.youtubegesturecontrol.service
 
-import com.example.youtubegesturecontrol.UserMessages
+import com.example.youtubegesturecontrol.UserNotice
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,12 +27,12 @@ class ControlStatusRepository {
         )
     }
 
-    fun updateDetail(detail: String) {
+    fun updateDetail(notice: UserNotice) {
         val current = mutableSnapshot.value
         if (current.state !is ControlState.WaitingForWakeWord) {
             return
         }
-        mutableSnapshot.value = current.copy(recentResult = detail)
+        mutableSnapshot.value = current.copy(recentResult = notice)
     }
 }
 
@@ -42,5 +42,5 @@ class ControlStatusRepository {
  */
 data class ControlSnapshot(
     val state: ControlState = ControlState.Stopped,
-    val recentResult: String = UserMessages.NO_RESULT_YET,
+    val recentResult: UserNotice = UserNotice.NoResultYet,
 )

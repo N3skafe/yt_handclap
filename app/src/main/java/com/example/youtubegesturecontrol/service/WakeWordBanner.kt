@@ -15,8 +15,8 @@ import android.view.LayoutInflater
 import android.view.WindowManager
 import android.widget.TextView
 import androidx.appcompat.view.ContextThemeWrapper
+import com.example.youtubegesturecontrol.AppLocales
 import com.example.youtubegesturecontrol.R
-import com.example.youtubegesturecontrol.UserMessages
 import com.example.youtubegesturecontrol.wakeword.WakeWordModels
 
 /**
@@ -40,9 +40,10 @@ class WakeWordBanner(
         }
         return try {
             val windowManager = appContext.getSystemService(WindowManager::class.java)
-            val view = bannerView ?: inflate().also { bannerView = it }
+            val view = inflate().also { bannerView = it }
             view.findViewById<TextView>(R.id.wakeBannerTitle).text = WakeWordModels.PHRASE
-            view.findViewById<TextView>(R.id.wakeBannerDetail).text = UserMessages.WAKE_WORD_HEARD
+            view.findViewById<TextView>(R.id.wakeBannerDetail).text =
+                view.context.getString(R.string.notice_wake_heard)
             if (view.parent == null) {
                 windowManager.addView(view, layoutParams())
             }
@@ -62,7 +63,8 @@ class WakeWordBanner(
     }
 
     private fun inflate(): android.view.View {
-        val themed = ContextThemeWrapper(appContext, R.style.Theme_YouTubeGestureControl)
+        removeView()
+        val themed = ContextThemeWrapper(AppLocales.wrap(appContext), R.style.Theme_YouTubeGestureControl)
         return LayoutInflater.from(themed).inflate(R.layout.view_wake_banner, null)
     }
 
@@ -113,6 +115,6 @@ class WakeWordBanner(
         private const val TAG = "WakeWordBanner"
         private const val VISIBLE_MS = 2200L
         private const val VIBRATION_MS = 80L
-        private const val TOP_OFFSET_DP = 48
+        private const val TOP_OFFSET_DP = 72
     }
 }

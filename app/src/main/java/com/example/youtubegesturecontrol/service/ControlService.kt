@@ -1,13 +1,15 @@
 package com.example.youtubegesturecontrol.service
 
 import android.app.Service
+import android.content.ComponentCallbacks
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.IBinder
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.example.youtubegesturecontrol.ControlTimeouts
-import com.example.youtubegesturecontrol.UserMessages
+import com.example.youtubegesturecontrol.UserNotice
 import com.example.youtubegesturecontrol.YouTubeGestureApplication
 import com.example.youtubegesturecontrol.gesture.GestureAnalyzer
 import com.example.youtubegesturecontrol.gesture.GestureSample
@@ -15,7 +17,7 @@ import com.example.youtubegesturecontrol.gesture.GestureStabilityTracker
 import com.example.youtubegesturecontrol.media.PlaybackCommand
 import com.example.youtubegesturecontrol.media.PlaybackRequestResult
 import com.example.youtubegesturecontrol.media.YoutubeController
-import com.example.youtubegesturecontrol.media.toKorean
+import com.example.youtubegesturecontrol.media.toNotice
 import com.example.youtubegesturecontrol.precondition.PrerequisiteChecker
 import com.example.youtubegesturecontrol.timing.CoroutineDelayedTaskRunner
 import com.example.youtubegesturecontrol.wakeword.SherpaWakeWordDetector
@@ -68,12 +70,29 @@ class ControlService : Service() {
     private var commandJob: Job? = null
     private var foregroundStarted = false
     private var stopIssued = false
+    private var callbacksRegistered = false
+
+    private val localeCallback = object : ComponentCallbacks {
+        override fun onConfigurationChanged(newConfig: Configuration) {
+            refreshLocalizedText()
+        }
+
+        override fun onLowMemory() = Unit
+    }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         // START_NOT_STICKY: 시스템이 프로세스를 죽인 뒤 서비스만 다시 만들지 않습니다.
         // 마이크와 카메라를 백그라운드에서 자동으로 재개하지 않기 위해서입니다.
+        if (intent?.action == ControlService.ACTION_REFRESH_TEXT) {
+            if (foregroundStarted && !stopIssued) {
+                refreshLocalizedText()
+            } else {
+                stopSelf()
+            }
+            return START_NOT_STICKY
+        }
         if (intent == null) {
             Log.w(TAG, "intent 없이 서비스가 시작되었습니다. 자동 재시작으로 보지 않고 종료합니다.")
             beginForegroundOrLog()
@@ -91,6 +110,10 @@ class ControlService : Service() {
     }
 
     override fun onDestroy() {
+        if (callbacksRegistered) {
+            application.unregisterComponentCallbacks(localeCallback)
+            callbacksRegistered = false
+        }
         commandJob?.cancel()
         timers.cancelAll()
         releaseWakeWordEngine()
@@ -105,13 +128,14 @@ class ControlService : Service() {
             return true
         }
         return try {
-            notifier.startForeground(UserMessages.stateLabel(ControlState.Starting), UserMessages.STARTING)
+            ensureLocaleCallbacks()
+            notifier.startForeground(ControlState.Starting, UserNotice.Starting)
             foregroundStarted = true
             true
         } catch (error: Exception) {
-            val message = "포그라운드 서비스를 시작하지 못했습니다. ${describe(error)}"
-            Log.e(TAG, message, error)
-            repository.update(MachineStep(state = ControlState.Error(message), recentResult = message))
+            val notice = UserNotice.ForegroundStartFailed(describe(error))
+            Log.e(TAG, "포그라운드 서비스를 시작하지 못했습니다.", error)
+            repository.update(MachineStep(state = ControlState.Error(notice), recentResult = notice))
             stopSelf()
             false
         }
@@ -144,21 +168,14 @@ class ControlService : Service() {
     }
 
     private fun apply(step: MachineStep) {
-        Log.i(TAG, "상태=${UserMessages.stateLabel(step.state)} 효과=${step.effects.size}")
+        Log.i(TAG, "상태=${step.state::class.simpleName} 효과=${step.effects.size}")
         repository.update(step)
         if (foregroundStarted && !stopIssued) {
             val detail = step.recentResult ?: repository.snapshot.value.recentResult
             try {
-                notifier.update(UserMessages.stateLabel(step.state), detail)
+                notifier.update(step.state, detail)
             } catch (error: Exception) {
                 Log.w(TAG, "상태 알림 갱신 실패", error)
-            }
-            if (step.recentResult == UserMessages.WAKE_WORD_HEARD) {
-                try {
-                    notifier.showWakeWordHeard()
-                } catch (error: Exception) {
-                    Log.w(TAG, "호출어 확인 표시 실패", error)
-                }
             }
         }
         for (effect in step.effects) {
@@ -219,6 +236,14 @@ class ControlService : Service() {
                 stopServiceSafely()
                 false
             }
+            ControlEffect.ShowWakeWordHeard -> {
+                try {
+                    notifier.showWakeWordHeard()
+                } catch (error: Exception) {
+                    Log.w(TAG, "호출어 확인 표시 실패", error)
+                }
+                false
+            }
         }
     }
 
@@ -228,9 +253,9 @@ class ControlService : Service() {
             if (!wakeWordPrepared) {
                 detector.prepare(
                     onDetected = { apply(machine.onWakeWordDetected()) },
-                    onError = { message ->
-                        Log.e(TAG, message)
-                        apply(machine.onUnrecoverable(message))
+                    onError = { notice ->
+                        Log.e(TAG, "호출어 오류 ${notice::class.simpleName}")
+                        apply(machine.onUnrecoverable(notice))
                     },
                     onDetail = { detail -> publishDetail(detail) },
                 )
@@ -240,18 +265,18 @@ class ControlService : Service() {
             false
         } catch (error: Exception) {
             Log.e(TAG, "호출어 시작 실패", error)
-            apply(machine.onUnrecoverable(describe(error)))
+            apply(machine.onUnrecoverable(UserNotice.ControlInterrupted(describe(error))))
             true
         }
     }
 
-    private fun publishDetail(detail: String) {
+    private fun publishDetail(notice: UserNotice) {
         if (machine.state !is ControlState.WaitingForWakeWord || stopIssued) {
             return
         }
-        repository.updateDetail(detail)
+        repository.updateDetail(notice)
         try {
-            notifier.update(UserMessages.stateLabel(machine.state), detail)
+            notifier.update(machine.state, notice)
         } catch (error: Exception) {
             Log.w(TAG, "상태 알림 갱신 실패", error)
         }
@@ -264,7 +289,7 @@ class ControlService : Service() {
             false
         } catch (error: Exception) {
             Log.e(TAG, "호출어 일시 중지 실패", error)
-            apply(machine.onUnrecoverable(describe(error)))
+            apply(machine.onUnrecoverable(UserNotice.ControlInterrupted(describe(error))))
             true
         }
     }
@@ -277,8 +302,12 @@ class ControlService : Service() {
 
     private fun armCameraTimeout(sessionId: Long) {
         timers.schedule(cameraToken(sessionId), ControlTimeouts.CAMERA_START_TIMEOUT_MS) {
-            val reason = "카메라 시작이 ${ControlTimeouts.CAMERA_START_TIMEOUT_MS}ms 안에 끝나지 않았습니다."
-            apply(machine.onCameraStartFailed(sessionId, reason))
+            apply(
+                machine.onCameraStartFailed(
+                    sessionId,
+                    UserNotice.CameraStartTimedOut(ControlTimeouts.CAMERA_START_TIMEOUT_MS),
+                ),
+            )
         }
     }
 
@@ -298,7 +327,7 @@ class ControlService : Service() {
             } catch (error: Exception) {
                 PlaybackRequestResult.Failed(command, describe(error))
             }
-            apply(machine.onCommandCompleted(sessionId, result.toKorean()))
+            apply(machine.onCommandCompleted(sessionId, result.toNotice()))
         }
     }
 
@@ -346,7 +375,7 @@ class ControlService : Service() {
         override fun onCameraFailed(sessionId: Long, error: Exception) {
             scope.launch {
                 Log.e(TAG, "카메라 시작 실패", error)
-                apply(machine.onCameraStartFailed(sessionId, describe(error)))
+                apply(machine.onCameraStartFailed(sessionId, UserNotice.CameraStartFailed(describe(error))))
             }
         }
 
@@ -359,6 +388,26 @@ class ControlService : Service() {
                 Log.e(TAG, "제스처 인식 실패 initialization=$initializationFailed", error)
                 apply(machine.onRecognizerFailed(sessionId, describe(error), initializationFailed))
             }
+        }
+    }
+
+    private fun ensureLocaleCallbacks() {
+        if (callbacksRegistered) {
+            return
+        }
+        callbacksRegistered = true
+        application.registerComponentCallbacks(localeCallback)
+    }
+
+    private fun refreshLocalizedText() {
+        if (!foregroundStarted || stopIssued) {
+            return
+        }
+        val snapshot = repository.snapshot.value
+        try {
+            notifier.update(snapshot.state, snapshot.recentResult)
+        } catch (error: Exception) {
+            Log.w(TAG, "상태 알림 갱신 실패", error)
         }
     }
 
@@ -380,6 +429,7 @@ class ControlService : Service() {
         private const val TAG = "ControlService"
         const val ACTION_START = "com.example.youtubegesturecontrol.action.START"
         const val ACTION_STOP = "com.example.youtubegesturecontrol.action.STOP"
+        const val ACTION_REFRESH_TEXT = "com.example.youtubegesturecontrol.action.REFRESH_TEXT"
 
         fun startWakeWordControl(context: Context) {
             start(context, ACTION_START)
@@ -387,6 +437,15 @@ class ControlService : Service() {
 
         fun stop(context: Context) {
             start(context, ACTION_STOP)
+        }
+
+        fun refreshText(context: Context) {
+            val intent = Intent(context, ControlService::class.java).setAction(ACTION_REFRESH_TEXT)
+            try {
+                context.startService(intent)
+            } catch (error: Exception) {
+                Log.w(TAG, "표시 언어 갱신 요청을 보내지 못했습니다.", error)
+            }
         }
 
         private fun start(context: Context, action: String) {

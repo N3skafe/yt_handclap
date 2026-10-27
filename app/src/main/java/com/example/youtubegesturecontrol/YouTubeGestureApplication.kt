@@ -9,4 +9,9 @@ import com.example.youtubegesturecontrol.service.ControlStatusRepository
  */
 class YouTubeGestureApplication : Application() {
     val statusRepository: ControlStatusRepository = ControlStatusRepository()
+
+    override fun onCreate() {
+        super.onCreate()
+        DisplayPreferences.applyStoredNightMode(this)
+    }
 }
