@@ -14,7 +14,7 @@ data class WakeWordStatus(
  * 이 파일은 안드로이드 API를 쓰지 않아서 단위 테스트할 수 있습니다.
  */
 object WakeWordModels {
-    const val PHRASE = "SENA"
+    const val PHRASE = "HI SENA"
     const val DIRECTORY = "kws"
 
     /**

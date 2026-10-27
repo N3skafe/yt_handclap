@@ -19,7 +19,7 @@ import com.k2fsa.sherpa.onnx.OnlineStream
 import com.k2fsa.sherpa.onnx.OnlineTransducerModelConfig
 
 /**
- * sherpa-onnx로 영어 호출어 "SENA" 하나만 듣습니다.
+ * sherpa-onnx로 영어 호출어 "HI SENA" 하나만 듣습니다.
  *
  * 이 라이브러리는 마이크를 직접 열지 않으므로, 16kHz 모노 오디오를 그대로 넣습니다.
  * 음량을 억지로 키우거나 48kHz를 다시 표본화하면 이 모델의 정확도가 떨어집니다.

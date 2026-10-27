@@ -4,33 +4,33 @@
 
 ### English
 
-Sena Cue pauses and resumes a regular video in the installed YouTube app. Say **SENA** in English, then hold an open palm to pause or a thumbs-up to play. Speech and hand recognition stay on the phone. The screen language can be English, Korean, Simplified Chinese, or Japanese, and the appearance can follow the system or be light or dark. The longer guide below is written separately in English and Korean.
+Sena Cue pauses and resumes a regular video in the installed YouTube app. Say **HI SENA** in English, then hold an open palm to pause or a thumbs-up to play. Speech and hand recognition stay on the phone. The screen language can be English, Korean, Simplified Chinese, or Japanese, and the appearance can follow the system or be light or dark. The longer guide below is written separately in English and Korean.
 
 ### 한국어
 
-Sena Cue는 폰에 설치된 유튜브 앱의 일반 동영상을 일시정지하거나 다시 재생합니다. 영어로 **SENA**라고 말한 뒤, 손바닥을 펼치면 일시정지고 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어집니다. 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고를 수 있고, 화면 모드는 시스템을 따르거나 라이트 또는 다크로 둘 수 있습니다. 아래의 긴 안내는 영어와 한국어로 나누어 적었습니다.
+Sena Cue는 폰에 설치된 유튜브 앱의 일반 동영상을 일시정지하거나 다시 재생합니다. 영어로 **HI SENA**라고 말한 뒤, 손바닥을 펼치면 일시정지고 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어집니다. 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고를 수 있고, 화면 모드는 시스템을 따르거나 라이트 또는 다크로 둘 수 있습니다. 아래의 긴 안내는 영어와 한국어로 나누어 적었습니다.
 
 ### 中文
 
-Sena Cue 可以暂停或继续播放已安装的 YouTube 应用中的普通视频。请用英语说 **SENA**，然后张开手掌暂停，或竖起大拇指播放。语音和手势识别都在手机上完成。界面语言可以是英语、韩语、简体中文或日语，外观可以跟随系统，也可以设为浅色或深色。下面的详细说明分为英语和韩语。
+Sena Cue 可以暂停或继续播放已安装的 YouTube 应用中的普通视频。请用英语说 **HI SENA**，然后张开手掌暂停，或竖起大拇指播放。语音和手势识别都在手机上完成。界面语言可以是英语、韩语、简体中文或日语，外观可以跟随系统，也可以设为浅色或深色。下面的详细说明分为英语和韩语。
 
 ### 日本語
 
-Sena Cue は、インストール済みの YouTube アプリにある通常の動画を一時停止したり再生したりします。英語で **SENA** と言ってから、開いた手のひらで一時停止、親指を上げて再生します。音声と手の認識はこの端末の中で行います。画面の言語は英語、韓国語、簡体字中国語、日本語から選べます。画面モードはシステムに従うか、ライトまたはダークにできます。詳しい説明は下に英語と韓国語で分けてあります。
+Sena Cue は、インストール済みの YouTube アプリにある通常の動画を一時停止したり再生したりします。英語で **HI SENA** と言ってから、開いた手のひらで一時停止、親指を上げて再生します。音声と手の認識はこの端末の中で行います。画面の言語は英語、韓国語、簡体字中国語、日本語から選べます。画面モードはシステムに従うか、ライトまたはダークにできます。詳しい説明は下に英語と韓国語で分けてあります。
 
 ## English
 
 ### What this app is
 
-Sena Cue listens for the English wake word **SENA**, then opens the front camera for a few seconds. An open palm sends pause to YouTube. A thumbs-up sends play. Speech and hand recognition stay on the phone. There is no account and no API key.
+Sena Cue listens for the English wake word **HI SENA**, then opens the front camera for a few seconds. An open palm sends pause to YouTube. A thumbs-up sends play. Speech and hand recognition stay on the phone. There is no account and no API key.
 
 The screen language can be English, Korean, Simplified Chinese, or Japanese. Appearance can follow the system, or be light or dark. Button names in this English guide match the English screen.
 
 The app sends those two commands to the YouTube app package `com.google.android.youtube`. It is aimed at a regular video while YouTube exposes a media session and notification access is on. Each wake accepts one command. An open palm always pauses, and a thumbs-up always plays.
 
-Palm pause and thumb play were checked on a phone. Hearing a spoken **SENA** and then opening the camera has been checked with an English recording, and has not yet been checked with a person speaking into the phone.
+Palm pause and thumb play were checked on a phone. Hearing a spoken **HI SENA** and then opening the camera has been checked with an English recording, and has not yet been checked with a person speaking into the phone.
 
-Audio is used only to decide whether **SENA** was said. Camera frames are used only to classify the hand. Neither is saved to a file or uploaded. The notification listener is used to find YouTube's media session.
+Audio is used only to decide whether **HI SENA** was said. Camera frames are used only to classify the hand. Neither is saved to a file or uploaded. The notification listener is used to find YouTube's media session.
 
 ### How to use it
 
@@ -39,18 +39,18 @@ You need Android 8.0 or later, a front camera, a microphone, and the YouTube app
 1. Install and open **Sena Cue**.
 2. Tap **Request permissions**. Allow the camera, the microphone, and, on Android 13 or later, notifications.
 3. Tap **Notification access**. Turn this app on, then come back. Android shows other apps' media sessions only to apps with this access. The app uses that list to find YouTube and request pause or play.
-4. Optional: tap **Display over other apps** and allow this app. When **SENA** is heard, a blue banner appears briefly over YouTube and the phone vibrates. The banner does not take touches. If you skip this, the app still starts and reports the wake word through the status notification.
+4. Optional: tap **Display over other apps** and allow this app. When **HI SENA** is heard, a blue banner appears briefly over YouTube and the phone vibrates. The banner does not take touches. If you skip this, the app still starts and reports the wake word through the status notification.
 5. Open YouTube and start a regular video.
 6. Return to this app while its screen is visible and tap **Start control**. The app can be started only from that visible screen. It does not start on boot.
 7. Switch back to YouTube. A status notification stays up. While the app is waiting for the wake word, the camera stays closed.
-8. Say **SENA** in English, then pause for a moment. Speak closer to the phone if the status says the microphone is quiet.
+8. Say **HI SENA** in English, then pause for a moment. Speak closer to the phone if the status says the microphone is quiet.
 9. Within about 10 seconds, hold one hand toward the front camera:
    - Open palm, fingers spread: pause.
    - Thumbs-up: play.
-   Hold the same shape for about a quarter of a second. The camera closes, the command goes to YouTube, and the app waits for **SENA** again.
+   Hold the same shape for about a quarter of a second. The camera closes, the command goes to YouTube, and the app waits for **HI SENA** again.
 10. Tap **Stop control** in the app or in the notification when you are done. If notifications are off, open the app and use the button there.
 
-If 10 seconds pass with no confirmed gesture, no command is sent and the app listens for **SENA** again. If YouTube has no active session, the status says so. Play a regular video and try again.
+If 10 seconds pass with no confirmed gesture, no command is sent and the app listens for **HI SENA** again. If YouTube has no active session, the status says so. Play a regular video and try again.
 
 ### License
 
@@ -66,7 +66,7 @@ After the wake word, an open palm pauses and a thumbs-up plays.
 
 ### Current status
 
-Palm pause and thumb play were checked on a phone. Hearing `SENA` and then opening the camera has not yet been checked on a phone. No API key is required.
+Palm pause and thumb play were checked on a phone. Hearing `HI SENA` and then opening the camera has not yet been checked on a phone. No API key is required.
 
 ### Architecture
 
@@ -138,7 +138,7 @@ If a permission is denied, the status is shown in the selected language, and the
 
 ### Wake word
 
-The app uses the English keyword model from sherpa-onnx 1.13.5. There is no account and no API key. There is one wake word, and the spoken phrase is `SENA`. `HELLO WORLD` was too long and still failed in a quiet room. `ASUMI` was not recognized from this model's pronunciation pieces.
+The app uses the English keyword model from sherpa-onnx 1.13.5. There is no account and no API key. There is one wake word, and the spoken phrase is `HI SENA`. `HELLO WORLD` was too long and still failed in a quiet room. `ASUMI` was not recognized from this model's pronunciation pieces.
 
 Only the needed files from the official mobile package are included.
 
@@ -200,13 +200,13 @@ Microphone audio is used only to judge the wake word. It is not saved to a file 
 
 ### 이 앱은 무엇인가
 
-Sena Cue는 영어 호출어 **SENA**를 들은 뒤 전면 카메라를 몇 초 열고, 손 모양으로 유튜브에 명령을 보냅니다. 손바닥을 펼치면 일시정지, 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어지고, 계정이나 API 키는 없습니다.
+Sena Cue는 영어 호출어 **HI SENA**를 들은 뒤 전면 카메라를 몇 초 열고, 손 모양으로 유튜브에 명령을 보냅니다. 손바닥을 펼치면 일시정지, 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어지고, 계정이나 API 키는 없습니다.
 
 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고릅니다. 화면 모드는 시스템을 따르거나 라이트 또는 다크입니다. 이 한국어 안내의 버튼 이름은 한국어 화면과 같습니다.
 
 명령은 유튜브 앱 패키지 `com.google.android.youtube`로만 갑니다. 유튜브가 미디어 세션을 내놓고 알림 접근이 켜져 있는 일반 동영상을 대상으로 합니다. 호출어 한 번에는 명령을 한 번만 보냅니다. 손바닥은 항상 일시정지이고, 엄지는 항상 재생입니다.
 
-손바닥 일시정지와 엄지 재생은 폰에서 확인했습니다. 영어 녹음으로 **SENA**가 잡히는 것까지는 확인했고, 폰에 직접 말한 뒤 카메라가 열리는 흐름은 아직 확인하지 않았습니다.
+손바닥 일시정지와 엄지 재생은 폰에서 확인했습니다. 영어 녹음으로 **HI SENA**가 잡히는 것까지는 확인했고, 폰에 직접 말한 뒤 카메라가 열리는 흐름은 아직 확인하지 않았습니다.
 
 마이크 소리는 호출어를 판정하는 데만 쓰고, 카메라 화면은 손 모양을 판정하는 데만 씁니다. 둘 다 파일로 저장하거나 올리지 않습니다. 알림 접근은 유튜브 미디어 세션을 찾는 데 씁니다.
 
@@ -217,18 +217,18 @@ Android 8.0 이상, 전면 카메라, 마이크, 유튜브 앱이 필요합니�
 1. **Sena Cue**를 설치하고 엽니다.
 2. **권한 요청**을 눌러 카메라, 마이크, Android 13 이상이면 알림을 허용합니다.
 3. **알림 접근 설정**을 눌러 이 앱을 켠 뒤 돌아옵니다. 안드로이드는 이 접근을 허용한 앱에만 다른 앱의 미디어 세션 목록을 보여 줍니다. 이 앱은 그 목록에서 유튜브를 찾아 일시정지 또는 재생을 요청합니다.
-4. 선택 사항: **화면 위 표시 설정**에서 이 앱을 허용합니다. **SENA**가 들리면 유튜브 위에 파란 표시가 잠깐 뜨고 짧게 진동합니다. 그 표시는 터치를 받지 않습니다. 허용하지 않아도 제어는 시작되고, 호출어는 상태 알림으로 알려 줍니다.
+4. 선택 사항: **화면 위 표시 설정**에서 이 앱을 허용합니다. **HI SENA**가 들리면 유튜브 위에 파란 표시가 잠깐 뜨고 짧게 진동합니다. 그 표시는 터치를 받지 않습니다. 허용하지 않아도 제어는 시작되고, 호출어는 상태 알림으로 알려 줍니다.
 5. 유튜브를 열고 일반 동영상을 재생합니다.
 6. 이 앱 화면이 보이는 상태에서 **제어 시작**을 누릅니다. 시작은 그 화면이 보일 때만 됩니다. 부팅할 때 저절로 켜지지 않습니다.
 7. 유튜브로 돌아갑니다. 상태 알림은 남아 있습니다. 호출어를 기다리는 동안에는 카메라를 열지 않습니다.
-8. 영어로 **SENA**라고 말한 뒤 잠깐 멈춥니다. 상태가 마이크가 조용하다고 하면 폰에 더 가까이에서 말합니다.
+8. 영어로 **HI SENA**라고 말한 뒤 잠깐 멈춥니다. 상태가 마이크가 조용하다고 하면 폰에 더 가까이에서 말합니다.
 9. 약 10초 안에 전면 카메라에 손 하나를 보여 줍니다.
    - 손가락을 편 손바닥: 일시정지.
    - 엄지: 재생.
-   같은 모양을 약 0.25초 유지합니다. 카메라가 닫히고 유튜브에 명령이 간 뒤, 다시 **SENA**를 기다립니다.
+   같은 모양을 약 0.25초 유지합니다. 카메라가 닫히고 유튜브에 명령이 간 뒤, 다시 **HI SENA**를 기다립니다.
 10. 끝나면 앱이나 알림의 **제어 중지**를 누릅니다. 알림 권한이 없으면 앱으로 돌아와 그 버튼을 누릅니다.
 
-10초 안에 손 모양이 확인되지 않으면 명령을 보내지 않고 다시 **SENA**를 기다립니다. 유튜브 세션이 없으면 화면에 그 내용이 나옵니다. 일반 동영상을 재생한 뒤 다시 말하면 됩니다.
+10초 안에 손 모양이 확인되지 않으면 명령을 보내지 않고 다시 **HI SENA**를 기다립니다. 유튜브 세션이 없으면 화면에 그 내용이 나옵니다. 일반 동영상을 재생한 뒤 다시 말하면 됩니다.
 
 ### 라이선스
 
@@ -244,7 +244,7 @@ Android 8.0 이상, 전면 카메라, 마이크, 유튜브 앱이 필요합니�
 
 ### 현재 상태
 
-손바닥 일시정지와 엄지 재생은 폰에서 확인했습니다. 호출어 `SENA`를 말한 뒤 카메라가 열리는 흐름은 아직 폰에서 확인하지 않았습니다. API 키는 필요 없습니다.
+손바닥 일시정지와 엄지 재생은 폰에서 확인했습니다. 호출어 `HI SENA`를 말한 뒤 카메라가 열리는 흐름은 아직 폰에서 확인하지 않았습니다. API 키는 필요 없습니다.
 
 ### 아키텍처
 
@@ -316,7 +316,7 @@ app/src/test/       카메라 없이 도는 단위 테스트
 
 ### 호출어
 
-sherpa-onnx 1.13.5의 영어 키워드 모델을 사용합니다. 계정이나 API 키는 없습니다. 호출어는 하나이고, 말할 문구는 `SENA`입니다. `HELLO WORLD`는 길어서 조용한 방에서도 잘 안 맞았고, `ASUMI`는 이 모델의 발음 조각으로 인식되지 않았습니다.
+sherpa-onnx 1.13.5의 영어 키워드 모델을 사용합니다. 계정이나 API 키는 없습니다. 호출어는 하나이고, 말할 문구는 `HI SENA`입니다. `HELLO WORLD`는 길어서 조용한 방에서도 잘 안 맞았고, `ASUMI`는 이 모델의 발음 조각으로 인식되지 않았습니다.
 
 모델은 공식 모바일 패키지에서 필요한 파일만 넣었습니다.
 

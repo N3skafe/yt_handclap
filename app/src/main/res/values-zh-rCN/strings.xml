@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_title">Sena Cue</string>
-    <string name="explanation">用英语说 SENA。张开手掌会暂停，竖起大拇指会播放。</string>
+    <string name="explanation">用英语说 HI SENA。张开手掌会暂停，竖起大拇指会播放。</string>
     <string name="section_status">状态</string>
     <string name="section_display">显示</string>
     <string name="language_button">语言：%1$s</string>
@@ -22,7 +22,7 @@
     <string name="notification_access">通知使用权</string>
     <string name="overlay_settings">显示在其他应用上层</string>
     <string name="overlay_title">在其他应用上层显示唤醒词</string>
-    <string name="overlay_message">听到 SENA 后，会在 YouTube 上短暂显示蓝色提示。需要允许此应用显示在其他应用上层。不允许时，只会用通知说明。该提示不接收触摸。</string>
+    <string name="overlay_message">听到 HI SENA 后，会在 YouTube 上短暂显示蓝色提示。需要允许此应用显示在其他应用上层。不允许时，只会用通知说明。该提示不接收触摸。</string>
     <string name="start_control">开始控制</string>
     <string name="stop_control">停止控制</string>
     <string name="notification_warning">没有通知权限时，状态通知和其中的停止按钮可能不会出现。可以回到此应用，点停止控制。</string>
@@ -56,12 +56,12 @@
     <string name="block_listener">通知使用权已关闭，因此无法查看 YouTube 会话。</string>
     <string name="notice_no_result">还没有结果。</string>
     <string name="notice_starting">正在启动控制服务。</string>
-    <string name="notice_waiting">请用英语说 SENA。等待期间不会打开相机。</string>
-    <string name="notice_mic_opened">麦克风已打开。请用英语说 SENA，然后稍停一下。</string>
-    <string name="notice_mic_hearing">正在收到声音。请用英语说 SENA，然后稍停一下。</string>
-    <string name="notice_mic_quiet">麦克风已打开，但几乎没有声音。请靠近手机说 SENA。</string>
+    <string name="notice_waiting">请用英语说 HI SENA。等待期间不会打开相机。</string>
+    <string name="notice_mic_opened">麦克风已打开。请用英语说 HI SENA，然后稍停一下。</string>
+    <string name="notice_mic_hearing">正在收到声音。请用英语说 HI SENA，然后稍停一下。</string>
+    <string name="notice_mic_quiet">麦克风已打开，但几乎没有声音。请靠近手机说 HI SENA。</string>
     <string name="notice_mic_unavailable">无法读取麦克风。请确认是否有其他应用正在使用它。</string>
-    <string name="notice_wake_heard">已听到 SENA。正在打开前置相机。</string>
+    <string name="notice_wake_heard">已听到 HI SENA。正在打开前置相机。</string>
     <string name="notice_recognition_timeout">10 秒内没有确认张开的手掌或竖起的大拇指。没有发送命令。</string>
     <string name="notice_stopped">已停止控制。</string>
     <string name="notice_palm">已确认张开的手掌。正在关闭相机，并向 YouTube 请求暂停。</string>

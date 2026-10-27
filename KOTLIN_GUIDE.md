@@ -35,7 +35,7 @@ Flutter/Dart에 익숙한 상태에서 이 저장소를 읽을 때 쓰는 안내
 | `GestureStabilityTracker` | 같은 손 모양이 충분히 유지됐는지 계산합니다. |
 | `YoutubeController` | 유튜브 세션을 다시 조회하고 `pause()` 또는 `play()`를 호출합니다. |
 | `MediaNotificationListener` | 세션 조회에 필요한 알림 접근 구성요소입니다. |
-| `SherpaWakeWordDetector` | 영어 호출어 `SENA`를 듣습니다. |
+| `SherpaWakeWordDetector` | 영어 호출어 `HI SENA`를 듣습니다. |
 | `PrerequisiteChecker` | 권한, 알림 접근, 모델, 호출어 설정을 문장으로 만듭니다. |
 
 ## Dart와 비교

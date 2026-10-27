@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_title">Sena Cue</string>
-    <string name="explanation">Say SENA in English. An open palm pauses the video, and a thumbs-up plays it.</string>
+    <string name="explanation">Say HI SENA in English. An open palm pauses the video, and a thumbs-up plays it.</string>
     <string name="section_status">Status</string>
     <string name="section_display">Display</string>
     <string name="language_button">Language: %1$s</string>
@@ -22,7 +22,7 @@
     <string name="notification_access">Notification access</string>
     <string name="overlay_settings">Display over other apps</string>
     <string name="overlay_title">Show the wake word over other apps</string>
-    <string name="overlay_message">When SENA is heard, a blue banner appears briefly over YouTube. Allow this app to display over other apps. Without that, only a notification is shown. The banner does not take touches.</string>
+    <string name="overlay_message">When HI SENA is heard, a blue banner appears briefly over YouTube. Allow this app to display over other apps. Without that, only a notification is shown. The banner does not take touches.</string>
     <string name="start_control">Start control</string>
     <string name="stop_control">Stop control</string>
     <string name="notification_warning">Without notification permission, the status notification and its stop button can stay hidden. You can come back to this app and tap Stop control.</string>
@@ -56,12 +56,12 @@
     <string name="block_listener">Notification access is off, so the YouTube session cannot be seen.</string>
     <string name="notice_no_result">No result yet.</string>
     <string name="notice_starting">Starting the control service.</string>
-    <string name="notice_waiting">Say SENA in English. The camera stays closed while waiting.</string>
-    <string name="notice_mic_opened">The microphone is open. Say SENA in English, then pause briefly.</string>
-    <string name="notice_mic_hearing">Sound is coming in. Say SENA in English, then pause briefly.</string>
-    <string name="notice_mic_quiet">The microphone is open but almost silent. Say SENA closer to the phone.</string>
+    <string name="notice_waiting">Say HI SENA in English. The camera stays closed while waiting.</string>
+    <string name="notice_mic_opened">The microphone is open. Say HI SENA in English, then pause briefly.</string>
+    <string name="notice_mic_hearing">Sound is coming in. Say HI SENA in English, then pause briefly.</string>
+    <string name="notice_mic_quiet">The microphone is open but almost silent. Say HI SENA closer to the phone.</string>
     <string name="notice_mic_unavailable">The microphone could not be read. Check whether another app is using it.</string>
-    <string name="notice_wake_heard">Heard SENA. Opening the front camera.</string>
+    <string name="notice_wake_heard">Heard HI SENA. Opening the front camera.</string>
     <string name="notice_recognition_timeout">No open palm or thumbs-up was confirmed within 10 seconds. No command was sent.</string>
     <string name="notice_stopped">Control stopped.</string>
     <string name="notice_palm">Open palm confirmed. Closing the camera and requesting pause in YouTube.</string>
