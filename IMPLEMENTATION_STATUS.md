@@ -18,6 +18,7 @@
 - CameraX `ImageAnalysis`, 전면 카메라, `STRATEGY_KEEP_ONLY_LATEST`, RGBA 복사, MediaPipe `LIVE_STREAM`.
 - 공식 `gesture_recognizer.task`를 `app/src/main/assets/`에 포함했습니다.
 - 유튜브 패키지 `com.google.android.youtube`만 선택합니다. 유튜브 뮤직은 제외합니다.
+- Shorts 진단용으로 `YoutubeController`가 활성 세션을 `Log.i`로 남깁니다.
 - 재생 상태 확인을 최대 2초 기다리며, 그 대기 전에 카메라를 닫습니다.
 - sherpa-onnx 1.13.5로 영어 호출어 `HI SENA` 하나만 듣습니다. API 키는 없습니다.
 - 제스처 테스트는 호출어 없이도 카메라와 모델이 있으면 동작하도록 연결되어 있습니다.

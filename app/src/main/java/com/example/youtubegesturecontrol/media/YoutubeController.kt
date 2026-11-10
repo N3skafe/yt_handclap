@@ -31,14 +31,18 @@ class YoutubeController(
             }
         } catch (error: kotlinx.coroutines.TimeoutCancellationException) {
             if (requestSent) {
-                PlaybackRequestResult.ConfirmationTimedOut(command)
+                val result = PlaybackRequestResult.ConfirmationTimedOut(command)
+                logResult(command, result)
+                result
             } else {
                 PlaybackRequestResult.ResponseTimedOut
             }
         } catch (error: CancellationException) {
             throw error
         } catch (error: Exception) {
-            PlaybackRequestResult.Failed(command, error.message ?: error.javaClass.simpleName)
+            val result = PlaybackRequestResult.Failed(command, error.message ?: error.javaClass.simpleName)
+            logResult(command, result)
+            result
         }
     }
 
@@ -63,13 +67,19 @@ class YoutubeController(
             Log.w(TAG, "알림 접근이 없어 세션을 조회하지 못했습니다.", error)
             return FindResult.ListenerMissing
         }
+        controllers.forEachIndexed { index, controller ->
+            logSession(index, controller)
+        }
         val listed = controllers.map { controller ->
             ListedSession(controller, snapshotOf(controller))
         }
         val index = YoutubeSessionSelector.selectIndex(listed.map { it.snapshot })
         if (index == null) {
-            return FindResult.Unavailable(listed.map { it.snapshot.packageName })
+            val packages = listed.map { it.snapshot.packageName }
+            Log.i(TAG, "selectedIndex=null packages=$packages")
+            return FindResult.Unavailable(packages)
         }
+        Log.i(TAG, "selectedIndex=$index pkg=${listed[index].snapshot.packageName}")
         return FindResult.Found(listed[index].controller)
     }
 
@@ -95,15 +105,24 @@ class YoutubeController(
         markSent: (Boolean) -> Unit,
     ): PlaybackRequestResult {
         val before = controller.playbackState
+        logDispatchStart(command, controller, before)
         if (before == null) {
+            Log.i(TAG, "dispatch PlaybackStateUnreadable command=$command")
             return PlaybackRequestResult.PlaybackStateUnreadable
         }
-        if (!PlaybackActionSupport.allows(before.actions, requiredAction(command))) {
+        val required = requiredAction(command)
+        if (!PlaybackActionSupport.allows(before.actions, required)) {
+            Log.i(
+                TAG,
+                "dispatch ActionUnsupported command=$command requiredAction=$required actions=${before.actions}",
+            )
             return PlaybackRequestResult.ActionUnsupported(command)
         }
         val tracksMedia = command == PlaybackCommand.NEXT || command == PlaybackCommand.PREVIOUS
         val beforeMatches = if (tracksMedia) false else matchesPlayback(command, before)
         val beforeIdentity = currentIdentity(controller)
+        traceBeforeIdentity = beforeIdentity
+        traceIdentityReader = { currentIdentity(controller) }
         var unregistered = false
         val callback = object : MediaController.Callback() {
             var onPlayback: ((PlaybackState?) -> Unit)? = null
@@ -133,6 +152,7 @@ class YoutubeController(
             return suspendCancellableCoroutine { continuation ->
                 fun resumeOnce(result: PlaybackRequestResult) {
                     if (continuation.isActive) {
+                        logResult(command, result, beforeIdentity, currentIdentity(controller))
                         continuation.resume(result)
                     }
                 }
@@ -221,6 +241,52 @@ class YoutubeController(
         }
     }
 
+    private fun logSession(index: Int, controller: MediaController) {
+        val state = controller.playbackState
+        val metadata = controller.metadata
+        Log.i(
+            TAG,
+            "session[$index] pkg=${controller.packageName} playback=${state?.state} " +
+                "actions=${state?.actions} mediaId=${metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)} " +
+                "title=${metadata?.description?.title}",
+        )
+    }
+
+    private fun logDispatchStart(
+        command: PlaybackCommand,
+        controller: MediaController,
+        state: PlaybackState?,
+    ) {
+        val metadata = controller.metadata
+        Log.i(
+            TAG,
+            "dispatch command=$command playback=${state?.state} actions=${state?.actions} " +
+                "mediaId=${metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)} " +
+                "title=${metadata?.description?.title}",
+        )
+    }
+
+    private fun logResult(
+        command: PlaybackCommand,
+        result: PlaybackRequestResult,
+        beforeIdentity: String? = traceBeforeIdentity,
+        afterIdentity: String? = traceIdentityReader?.invoke(),
+    ) {
+        if (
+            result !is PlaybackRequestResult.Confirmed &&
+            result !is PlaybackRequestResult.ConfirmationTimedOut &&
+            result !is PlaybackRequestResult.Failed
+        ) {
+            return
+        }
+        val identity = if (command == PlaybackCommand.NEXT || command == PlaybackCommand.PREVIOUS) {
+            " beforeIdentity=$beforeIdentity afterIdentity=$afterIdentity"
+        } else {
+            ""
+        }
+        Log.i(TAG, "result ${result::class.simpleName} command=$command$identity")
+    }
+
     private fun currentIdentity(controller: MediaController): String? {
         val metadata = controller.metadata
         return MediaIdentity.of(
@@ -241,6 +307,9 @@ class YoutubeController(
         val controller: MediaController,
         val snapshot: MediaSessionSnapshot,
     )
+
+    private var traceBeforeIdentity: String? = null
+    private var traceIdentityReader: (() -> String?)? = null
 
     companion object {
         private const val TAG = "YoutubeController"
