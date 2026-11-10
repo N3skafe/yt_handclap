@@ -69,7 +69,10 @@ class GestureStabilityTracker(
     private fun minimumConfidence(gesture: HandGesture): Float {
         return when (gesture) {
             HandGesture.OPEN_PALM -> GestureThresholds.OPEN_PALM_MIN_CONFIDENCE
-            HandGesture.THUMB_UP -> minConfidence
+            HandGesture.THUMB_UP,
+            HandGesture.THUMB_DOWN,
+            HandGesture.CLOSED_FIST,
+            -> minConfidence
         }
     }
 

@@ -55,6 +55,29 @@ class ControlStateMachineTest {
     }
 
     @Test
+    fun thumbDownRequestsNextOnlyAfterCameraCloses() {
+        assertShapeRequests(HandGesture.THUMB_DOWN, PlaybackCommand.NEXT)
+    }
+
+    @Test
+    fun closedFistRequestsPreviousOnlyAfterCameraCloses() {
+        assertShapeRequests(HandGesture.CLOSED_FIST, PlaybackCommand.PREVIOUS)
+    }
+
+    @Test
+    fun skipGesturesSendOnlyOneCommandPerSession() {
+        val machine = ControlStateMachine()
+        val sessionId = recognize(machine)
+        machine.onGestureConfirmed(sessionId, HandGesture.THUMB_DOWN)
+        val second = machine.onGestureConfirmed(sessionId, HandGesture.CLOSED_FIST)
+        assertTrue(second.effects.isEmpty())
+        val dispatch = machine.onCameraClosed(sessionId)
+        assertEquals(1, dispatch.effects.count { it is ControlEffect.DispatchCommand })
+        val effect = dispatch.effects.filterIsInstance<ControlEffect.DispatchCommand>().single()
+        assertEquals(PlaybackCommand.NEXT, effect.command)
+    }
+
+    @Test
     fun secondGestureInSameSessionDoesNotDispatchAnotherCommand() {
         val machine = ControlStateMachine()
         val sessionId = recognize(machine)
@@ -222,6 +245,19 @@ class ControlStateMachineTest {
         val closed = machine.onCameraClosed(sessionId)
         assertTrue(closed.state is ControlState.Error)
         assertTrue(closed.effects.any { it is ControlEffect.StopService })
+    }
+
+    private fun assertShapeRequests(gesture: HandGesture, command: PlaybackCommand) {
+        val machine = ControlStateMachine()
+        val sessionId = recognize(machine)
+        val confirmed = machine.onGestureConfirmed(sessionId, gesture)
+        val cleaning = confirmed.state as ControlState.CleaningUp
+        assertEquals(command, cleaning.pendingCommand)
+        assertTrue(confirmed.effects.none { it is ControlEffect.DispatchCommand })
+        assertTrue(confirmed.effects.any { it is ControlEffect.CloseCamera })
+        val dispatch = machine.onCameraClosed(sessionId)
+        val effect = dispatch.effects.filterIsInstance<ControlEffect.DispatchCommand>().single()
+        assertEquals(command, effect.command)
     }
 
     private fun startWakeWord(machine: ControlStateMachine) {

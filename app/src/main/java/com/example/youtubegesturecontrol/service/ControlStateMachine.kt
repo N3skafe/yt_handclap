@@ -316,6 +316,8 @@ class ControlStateMachine(
         return when (gesture) {
             HandGesture.OPEN_PALM -> PlaybackCommand.PAUSE
             HandGesture.THUMB_UP -> PlaybackCommand.PLAY
+            HandGesture.THUMB_DOWN -> PlaybackCommand.NEXT
+            HandGesture.CLOSED_FIST -> PlaybackCommand.PREVIOUS
         }
     }
 }

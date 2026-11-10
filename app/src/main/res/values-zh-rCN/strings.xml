@@ -66,6 +66,8 @@
     <string name="notice_stopped">已停止控制。</string>
     <string name="notice_palm">已确认张开的手掌。正在关闭相机，并向 YouTube 请求暂停。</string>
     <string name="notice_thumb">已确认竖起的大拇指。正在关闭相机，并向 YouTube 请求播放。</string>
+    <string name="notice_thumb_down">已确认拇指向下。正在关闭相机，并向 YouTube 请求下一个视频。</string>
+    <string name="notice_closed_fist">已确认握拳。正在关闭相机，并向 YouTube 请求上一个视频。</string>
     <string name="notice_camera_failed">无法打开相机。失败后不会立刻自动重试。原因：%1$s</string>
     <string name="notice_camera_timeout">相机没有在 %1$d 毫秒内启动。</string>
     <string name="notice_recognizer_failed">无法使用手势识别器。原因：%1$s</string>
@@ -77,10 +79,16 @@
     <string name="notice_play_confirmed">已请求播放，并确认 YouTube 正在播放。</string>
     <string name="notice_pause_timeout">已请求暂停，但没有在时限内确认暂停状态。</string>
     <string name="notice_play_timeout">已请求播放，但没有在时限内确认播放状态。</string>
+    <string name="notice_next_confirmed">已请求下一个视频，并确认视频已更换。</string>
+    <string name="notice_previous_confirmed">已请求上一个视频，并确认视频已更换。</string>
+    <string name="notice_next_timeout">已请求下一个视频，但没有在时限内确认视频更换。</string>
+    <string name="notice_previous_timeout">已请求上一个视频，但没有在时限内确认视频更换。</string>
     <string name="notice_listener_missing">通知使用权已关闭，因此无法查询媒体会话。</string>
     <string name="notice_unsupported">YouTube 会话表示不支持%1$s。没有改用播放/暂停切换来代替。</string>
     <string name="action_pause">暂停</string>
     <string name="action_play">播放</string>
+    <string name="action_next">下一个</string>
+    <string name="action_previous">上一个</string>
     <string name="notice_playback_failed">YouTube 命令没有完成。%1$s</string>
     <string name="notice_session_response_timeout">媒体会话没有在时限内响应。</string>
     <string name="notice_foreground_failed">无法启动前台服务。%1$s</string>
@@ -93,6 +101,8 @@
     <string name="state_recognizing">正在确认手势</string>
     <string name="state_request_pause">正在请求暂停</string>
     <string name="state_request_play">正在请求播放</string>
+    <string name="state_request_next">正在请求下一个视频</string>
+    <string name="state_request_previous">正在请求上一个视频</string>
     <string name="state_cleaning">正在关闭相机</string>
     <string name="state_error">错误</string>
     <string name="channel_control_description">显示等待唤醒词和手势识别的状态。</string>

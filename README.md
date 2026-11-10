@@ -4,29 +4,29 @@
 
 ### English
 
-Sena Cue pauses and resumes a regular video in the installed YouTube app. Say **HI SENA** in English, then hold an open palm to pause or a thumbs-up to play. Speech and hand recognition stay on the phone. The screen language can be English, Korean, Simplified Chinese, or Japanese, and the appearance can follow the system or be light or dark. The longer guide below is written separately in English and Korean.
+Sena Cue controls a video in the installed YouTube app, including Shorts when that session advertises next and previous. Say **HI SENA** in English, then hold an open palm to pause, a thumbs-up to play, a thumb down for the next video, or a closed fist for the previous video. Speech and hand recognition stay on the phone. The screen language can be English, Korean, Simplified Chinese, or Japanese, and the appearance can follow the system or be light or dark. The longer guide below is written separately in English and Korean.
 
 ### 한국어
 
-Sena Cue는 폰에 설치된 유튜브 앱의 일반 동영상을 일시정지하거나 다시 재생합니다. 영어로 **HI SENA**라고 말한 뒤, 손바닥을 펼치면 일시정지고 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어집니다. 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고를 수 있고, 화면 모드는 시스템을 따르거나 라이트 또는 다크로 둘 수 있습니다. 아래의 긴 안내는 영어와 한국어로 나누어 적었습니다.
+Sena Cue는 폰에 설치된 유튜브 앱의 영상을 제어합니다. 세션이 다음·이전을 알려 주면 Shorts도 같은 손 모양으로 제어합니다. 영어로 **HI SENA**라고 말한 뒤, 손바닥은 일시정지, 엄지 올림은 재생, 엄지 내림은 다음, 주먹은 이전입니다. 음성과 손 인식은 폰 안에서 이루어집니다. 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고를 수 있고, 화면 모드는 시스템을 따르거나 라이트 또는 다크로 둘 수 있습니다. 아래의 긴 안내는 영어와 한국어로 나누어 적었습니다.
 
 ### 中文
 
-Sena Cue 可以暂停或继续播放已安装的 YouTube 应用中的普通视频。请用英语说 **HI SENA**，然后张开手掌暂停，或竖起大拇指播放。语音和手势识别都在手机上完成。界面语言可以是英语、韩语、简体中文或日语，外观可以跟随系统，也可以设为浅色或深色。下面的详细说明分为英语和韩语。
+Sena Cue 可以控制已安装的 YouTube 应用中的视频。会话提供下一个和上一个时，Shorts 也用同样的手势控制。请用英语说 **HI SENA**，然后张开手掌暂停，竖起大拇指播放，拇指向下切换到下一个，握拳切换到上一个。语音和手势识别都在手机上完成。界面语言可以是英语、韩语、简体中文或日语，外观可以跟随系统，也可以设为浅色或深色。下面的详细说明分为英语和韩语。
 
 ### 日本語
 
-Sena Cue は、インストール済みの YouTube アプリにある通常の動画を一時停止したり再生したりします。英語で **HI SENA** と言ってから、開いた手のひらで一時停止、親指を上げて再生します。音声と手の認識はこの端末の中で行います。画面の言語は英語、韓国語、簡体字中国語、日本語から選べます。画面モードはシステムに従うか、ライトまたはダークにできます。詳しい説明は下に英語と韓国語で分けてあります。
+Sena Cue は、インストール済みの YouTube アプリの動画を制御します。セッションが次へ・前へを示すときは、Shorts も同じ手の形で制御します。英語で **HI SENA** と言ってから、開いた手のひらで一時停止、親指を上げて再生、親指を下げて次へ、拳で前へです。音声と手の認識はこの端末の中で行います。画面の言語は英語、韓国語、簡体字中国語、日本語から選べます。画面モードはシステムに従うか、ライトまたはダークにできます。詳しい説明は下に英語と韓国語で分けてあります。
 
 ## English
 
 ### What this app is
 
-Sena Cue listens for the English wake word **HI SENA**, then opens the front camera for a few seconds. An open palm sends pause to YouTube. A thumbs-up sends play. Speech and hand recognition stay on the phone. There is no account and no API key.
+Sena Cue listens for the English wake word **HI SENA**, then opens the front camera for a few seconds. An open palm sends pause, a thumbs-up sends play, a thumb down sends next, and a closed fist sends previous. Speech and hand recognition stay on the phone. There is no account and no API key.
 
 The screen language can be English, Korean, Simplified Chinese, or Japanese. Appearance can follow the system, or be light or dark. The button names in this English guide match the English screen.
 
-The app sends those two commands only to the YouTube app package `com.google.android.youtube`. It is for a regular video while YouTube exposes a media session and notification access is on. Each wake accepts one command. An open palm always pauses, and a thumbs-up always plays.
+The app sends those commands only to the YouTube app package `com.google.android.youtube`. A regular video and a Short use the same gestures and the same session commands. Shorts are controlled when that session advertises skip next and skip previous. Each wake accepts one command.
 
 Audio is used only to decide whether **HI SENA** was said. Camera frames are used only to classify the hand. Neither is saved to a file or uploaded. The notification listener is used to find YouTube's media session.
 
@@ -46,6 +46,8 @@ You need Android 8.0 or later, a front camera, a microphone, and the YouTube app
 10. Within about 10 seconds, hold one hand toward the front camera:
     - Open palm, fingers spread: pause.
     - Thumbs-up: play.
+    - Thumb down: next video.
+    - Closed fist: previous video.
     Hold the same shape for about a quarter of a second. The camera closes, the command goes to YouTube, and the app waits for **HI SENA** again.
 11. Tap **Stop control** in the app or in the notification when you are done. If notifications are off, open the app and use the button there.
 
@@ -53,7 +55,7 @@ If 10 seconds pass with no confirmed gesture, no command is sent and the app lis
 
 ### What it does not do
 
-Sena Cue does not play, embed, or download video. It does not control YouTube Music or other audio apps. It does not seek, change the volume, skip to the next video, or close YouTube. Shorts, ads, and live streams are outside the regular-video use described above. One wake sends at most one command.
+Sena Cue does not play, embed, or download video. It does not control YouTube Music or other audio apps. It does not seek, change the volume, or close YouTube. It does not like, comment, share, or subscribe. Ads and live streams are outside this control. One wake sends at most one command.
 
 ### Privacy
 
@@ -83,11 +85,11 @@ The debug APK is `app/build/outputs/apk/debug/app-debug.apk`.
 
 ### 이 앱은 무엇인가
 
-Sena Cue는 영어 호출어 **HI SENA**를 들은 뒤 전면 카메라를 몇 초 열고, 손 모양으로 유튜브에 명령을 보냅니다. 손바닥을 펼치면 일시정지, 엄지를 올리면 재생입니다. 음성과 손 인식은 폰 안에서 이루어지고, 계정이나 API 키는 없습니다.
+Sena Cue는 영어 호출어 **HI SENA**를 들은 뒤 전면 카메라를 몇 초 열고, 손 모양으로 유튜브에 명령을 보냅니다. 손바닥은 일시정지, 엄지 올림은 재생, 엄지 내림은 다음, 주먹은 이전입니다. 음성과 손 인식은 폰 안에서 이루어지고, 계정이나 API 키는 없습니다.
 
 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고릅니다. 화면 모드는 시스템을 따르거나 라이트 또는 다크입니다. 이 한국어 안내의 버튼 이름은 한국어 화면과 같습니다.
 
-명령은 유튜브 앱 패키지 `com.google.android.youtube`로만 갑니다. 유튜브가 미디어 세션을 내놓고 알림 접근이 켜져 있는 일반 동영상을 대상으로 합니다. 호출어 한 번에는 명령을 한 번만 보냅니다. 손바닥은 항상 일시정지이고, 엄지는 항상 재생입니다.
+명령은 유튜브 앱 패키지 `com.google.android.youtube`로만 갑니다. 일반 동영상과 Shorts는 같은 손 모양과 같은 세션 명령을 씁니다. Shorts는 그 세션이 다음·이전을 알려 줄 때 제어합니다. 호출어 한 번에는 명령을 한 번만 보냅니다.
 
 마이크 소리는 **HI SENA**를 말했는지 판정하는 데만 쓰고, 카메라 화면은 손 모양을 판정하는 데만 씁니다. 둘 다 파일로 저장하거나 올리지 않습니다. 알림 접근은 유튜브 미디어 세션을 찾는 데 씁니다.
 
@@ -106,7 +108,9 @@ Android 8.0 이상, 전면 카메라, 마이크, 유튜브 앱이 필요합니�
 9. 영어로 **HI SENA**라고 말한 뒤 잠깐 멈춥니다. 상태가 마이크가 조용하다고 하면 폰에 더 가까이에서 말합니다.
 10. 약 10초 안에 전면 카메라에 손 하나를 보여 줍니다.
     - 손가락을 편 손바닥: 일시정지.
-    - 엄지: 재생.
+    - 엄지 올림: 재생.
+    - 엄지 내림: 다음 영상.
+    - 주먹: 이전 영상.
     같은 모양을 약 0.25초 유지합니다. 카메라가 닫히고 유튜브에 명령이 간 뒤, 다시 **HI SENA**를 기다립니다.
 11. 끝나면 앱이나 알림의 **제어 중지**를 누릅니다. 알림 권한이 없으면 앱으로 돌아와 그 버튼을 누릅니다.
 
@@ -114,7 +118,7 @@ Android 8.0 이상, 전면 카메라, 마이크, 유튜브 앱이 필요합니�
 
 ### 하지 않는 일
 
-Sena Cue는 영상을 재생하거나 유튜브를 내장하거나 영상을 내려받지 않습니다. 유튜브 뮤직과 다른 오디오 앱은 제어하지 않습니다. 탐색, 음량, 다음 영상, 유튜브 종료도 없습니다. Shorts, 광고, 라이브는 위에서 적은 일반 동영상 사용에 포함하지 않습니다. 호출어 한 번에 명령은 최대 한 번입니다.
+Sena Cue는 영상을 재생하거나 유튜브를 내장하거나 영상을 내려받지 않습니다. 유튜브 뮤직과 다른 오디오 앱은 제어하지 않습니다. 탐색, 음량, 유튜브 종료도 없습니다. 좋아요, 댓글, 공유, 구독도 없습니다. 광고와 라이브는 이 제어에 넣지 않습니다. 호출어 한 번에 명령은 최대 한 번입니다.
 
 ### 개인정보
 

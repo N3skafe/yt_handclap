@@ -109,6 +109,16 @@ class GestureStabilityTrackerTest {
     }
 
     @Test
+    fun stableThumbDownConfirmsAfterDuration() {
+        assertEquals(HandGesture.THUMB_DOWN, hold("Thumb_Down", GestureThresholds.MIN_CLASSIFICATION_CONFIDENCE))
+    }
+
+    @Test
+    fun stableClosedFistConfirmsAfterDuration() {
+        assertEquals(HandGesture.CLOSED_FIST, hold("Closed_Fist", GestureThresholds.MIN_CLASSIFICATION_CONFIDENCE))
+    }
+
+    @Test
     fun secondConfirmationIsIgnoredUntilReset() {
         confirmPalm()
         val second = tracker.onSample(sample(2_000L, "Thumb_Up", 0.99f))
@@ -141,6 +151,17 @@ class GestureStabilityTrackerTest {
             confirmed = tracker.onSample(sample(time, "Open_Palm", 0.95f))
         }
         assertEquals(HandGesture.OPEN_PALM, confirmed)
+    }
+
+    private fun hold(name: String, confidence: Float): HandGesture? {
+        var time = 0L
+        tracker.onSample(sample(time, name, confidence))
+        var confirmed: HandGesture? = null
+        while (confirmed == null && time <= GestureThresholds.STABLE_DURATION_MS + stepMs) {
+            time += stepMs
+            confirmed = tracker.onSample(sample(time, name, confidence))
+        }
+        return confirmed
     }
 
     private fun sample(elapsedMs: Long, name: String?, confidence: Float): GestureSample {

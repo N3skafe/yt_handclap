@@ -38,6 +38,8 @@ fun Context.controlStateLabel(state: ControlState): String {
         is ControlState.DispatchingCommand -> when (state.command) {
             PlaybackCommand.PAUSE -> R.string.state_request_pause
             PlaybackCommand.PLAY -> R.string.state_request_play
+            PlaybackCommand.NEXT -> R.string.state_request_next
+            PlaybackCommand.PREVIOUS -> R.string.state_request_previous
         }
         is ControlState.CleaningUp -> R.string.state_cleaning
         is ControlState.Error -> R.string.state_error
@@ -60,6 +62,8 @@ private fun Context.renderNotice(notice: UserNotice): String {
         is UserNotice.GestureConfirmed -> when (notice.gesture) {
             HandGesture.OPEN_PALM -> getString(R.string.notice_palm)
             HandGesture.THUMB_UP -> getString(R.string.notice_thumb)
+            HandGesture.THUMB_DOWN -> getString(R.string.notice_thumb_down)
+            HandGesture.CLOSED_FIST -> getString(R.string.notice_closed_fist)
         }
         is UserNotice.CameraStartFailed -> getString(R.string.notice_camera_failed, notice.reason)
         is UserNotice.CameraStartTimedOut ->
@@ -107,6 +111,8 @@ private fun Context.playbackConfirmed(command: PlaybackCommand, alreadyInRequest
         } else {
             getString(R.string.notice_play_confirmed)
         }
+        PlaybackCommand.NEXT -> getString(R.string.notice_next_confirmed)
+        PlaybackCommand.PREVIOUS -> getString(R.string.notice_previous_confirmed)
     }
 }
 
@@ -114,6 +120,8 @@ private fun Context.playbackTimedOut(command: PlaybackCommand): String {
     return when (command) {
         PlaybackCommand.PAUSE -> getString(R.string.notice_pause_timeout)
         PlaybackCommand.PLAY -> getString(R.string.notice_play_timeout)
+        PlaybackCommand.NEXT -> getString(R.string.notice_next_timeout)
+        PlaybackCommand.PREVIOUS -> getString(R.string.notice_previous_timeout)
     }
 }
 
@@ -121,5 +129,7 @@ private fun Context.actionName(command: PlaybackCommand): String {
     return when (command) {
         PlaybackCommand.PAUSE -> getString(R.string.action_pause)
         PlaybackCommand.PLAY -> getString(R.string.action_play)
+        PlaybackCommand.NEXT -> getString(R.string.action_next)
+        PlaybackCommand.PREVIOUS -> getString(R.string.action_previous)
     }
 }

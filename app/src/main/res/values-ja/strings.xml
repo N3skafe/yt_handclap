@@ -66,6 +66,8 @@
     <string name="notice_stopped">制御を停止しました。</string>
     <string name="notice_palm">開いた手のひらを確認しました。カメラを閉じて、YouTube に一時停止を依頼します。</string>
     <string name="notice_thumb">親指を上げるジェスチャーを確認しました。カメラを閉じて、YouTube に再生を依頼します。</string>
+    <string name="notice_thumb_down">親指を下げた手の形を確認しました。カメラを閉じて、YouTube に次の動画を依頼します。</string>
+    <string name="notice_closed_fist">拳を確認しました。カメラを閉じて、YouTube に前の動画を依頼します。</string>
     <string name="notice_camera_failed">カメラを開けませんでした。失敗の直後に自動では開き直しません。原因: %1$s</string>
     <string name="notice_camera_timeout">カメラの起動が %1$d ミリ秒以内に終わりませんでした。</string>
     <string name="notice_recognizer_failed">ジェスチャー認識を使えません。原因: %1$s</string>
@@ -77,10 +79,16 @@
     <string name="notice_play_confirmed">再生を依頼し、YouTube が再生中になったことを確認しました。</string>
     <string name="notice_pause_timeout">一時停止は依頼しましたが、制限時間内に一時停止を確認できませんでした。</string>
     <string name="notice_play_timeout">再生は依頼しましたが、制限時間内に再生中を確認できませんでした。</string>
+    <string name="notice_next_confirmed">次の動画を依頼し、動画が変わったことを確認しました。</string>
+    <string name="notice_previous_confirmed">前の動画を依頼し、動画が変わったことを確認しました。</string>
+    <string name="notice_next_timeout">次の動画は依頼しましたが、制限時間内に動画の変更を確認できませんでした。</string>
+    <string name="notice_previous_timeout">前の動画は依頼しましたが、制限時間内に動画の変更を確認できませんでした。</string>
     <string name="notice_listener_missing">通知へのアクセスがオフのため、メディアセッションを照会できません。</string>
     <string name="notice_unsupported">YouTube のセッションは %1$s に対応していないと知らせてきました。再生と一時停止の切り替えでは代わりにしていません。</string>
     <string name="action_pause">一時停止</string>
     <string name="action_play">再生</string>
+    <string name="action_next">次へ</string>
+    <string name="action_previous">前へ</string>
     <string name="notice_playback_failed">YouTube へのコマンドを完了できませんでした。%1$s</string>
     <string name="notice_session_response_timeout">メディアセッションが制限時間内に応答しませんでした。</string>
     <string name="notice_foreground_failed">フォアグラウンドサービスを開始できませんでした。%1$s</string>
@@ -93,6 +101,8 @@
     <string name="state_recognizing">ジェスチャーを確認中</string>
     <string name="state_request_pause">一時停止を依頼中</string>
     <string name="state_request_play">再生を依頼中</string>
+    <string name="state_request_next">次の動画を依頼中</string>
+    <string name="state_request_previous">前の動画を依頼中</string>
     <string name="state_cleaning">カメラを閉じています</string>
     <string name="state_error">エラー</string>
     <string name="channel_control_description">ウェイクワード待ちとジェスチャー認識の状態を表示します。</string>

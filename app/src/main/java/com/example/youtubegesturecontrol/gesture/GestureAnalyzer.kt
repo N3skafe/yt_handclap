@@ -326,28 +326,12 @@ class GestureAnalyzer(
 
     private fun recognizedGesture(result: GestureRecognizerResult): Pair<String?, Float> {
         val classified = topCategory(result)
-        val thumbIsConfident = classified.first == "Thumb_Up" &&
-            classified.second >= GestureThresholds.MIN_CLASSIFICATION_CONFIDENCE
-        if (thumbIsConfident) {
-            return classified
-        }
-        if (landmarksLookLikeThumbUp(result)) {
-            val thumbScore = if (classified.first == "Thumb_Up") {
-                maxOf(classified.second, LANDMARK_THUMB_CONFIDENCE)
-            } else {
-                LANDMARK_THUMB_CONFIDENCE
-            }
-            return "Thumb_Up" to thumbScore
-        }
-        if (landmarksLookLikeOpenPalm(result)) {
-            val palmScore = if (classified.first == "Open_Palm") {
-                maxOf(classified.second, LANDMARK_PALM_CONFIDENCE)
-            } else {
-                LANDMARK_PALM_CONFIDENCE
-            }
-            return "Open_Palm" to palmScore
-        }
-        return classified
+        return GestureClassification.choose(
+            modelCategoryName = classified.first,
+            modelScore = classified.second,
+            landmarksLookLikeThumb = landmarksLookLikeThumbUp(result),
+            landmarksLookLikeOpenPalm = landmarksLookLikeOpenPalm(result),
+        )
     }
 
     private fun landmarksLookLikeThumbUp(result: GestureRecognizerResult): Boolean {
@@ -550,7 +534,5 @@ class GestureAnalyzer(
     companion object {
         const val MODEL_ASSET_PATH = "gesture_recognizer.task"
         private const val TAG = "GestureAnalyzer"
-        private const val LANDMARK_PALM_CONFIDENCE = 0.85f
-        private const val LANDMARK_THUMB_CONFIDENCE = 0.85f
     }
 }

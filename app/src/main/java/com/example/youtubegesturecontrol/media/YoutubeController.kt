@@ -2,6 +2,7 @@ package com.example.youtubegesturecontrol.media
 
 import android.content.ComponentName
 import android.content.Context
+import android.media.MediaMetadata
 import android.media.session.MediaController
 import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
@@ -13,7 +14,7 @@ import kotlinx.coroutines.withTimeout
 import kotlin.coroutines.resume
 
 /**
- * 설치된 유튜브 앱의 미디어 세션에 일시정지 또는 재생만 요청합니다.
+ * 설치된 유튜브 앱의 미디어 세션에 일시정지, 재생, 다음, 이전을 요청합니다.
  * 접근성 서비스, 화면 터치, 전역 재생 토글은 사용하지 않습니다.
  *
  * 콜백은 컨트롤러를 만든 스레드의 Looper로 오므로 이 함수는 메인 스레드에서 호출합니다.
@@ -97,20 +98,27 @@ class YoutubeController(
         if (before == null) {
             return PlaybackRequestResult.PlaybackStateUnreadable
         }
-        if (!supports(before, command)) {
+        if (!PlaybackActionSupport.allows(before.actions, requiredAction(command))) {
             return PlaybackRequestResult.ActionUnsupported(command)
         }
-        val beforeMatches = matches(command, before)
+        val tracksMedia = command == PlaybackCommand.NEXT || command == PlaybackCommand.PREVIOUS
+        val beforeMatches = if (tracksMedia) false else matchesPlayback(command, before)
+        val beforeIdentity = currentIdentity(controller)
         var unregistered = false
         val callback = object : MediaController.Callback() {
-            var onChanged: ((PlaybackState?) -> Unit)? = null
+            var onPlayback: ((PlaybackState?) -> Unit)? = null
+            var onMetadata: (() -> Unit)? = null
 
             override fun onPlaybackStateChanged(state: PlaybackState?) {
-                onChanged?.invoke(state)
+                onPlayback?.invoke(state)
+            }
+
+            override fun onMetadataChanged(metadata: MediaMetadata?) {
+                onMetadata?.invoke()
             }
 
             override fun onSessionDestroyed() {
-                onChanged?.invoke(null)
+                onPlayback?.invoke(null)
             }
         }
         fun unregister() {
@@ -128,10 +136,22 @@ class YoutubeController(
                         continuation.resume(result)
                     }
                 }
-                callback.onChanged = { state ->
+                fun confirmMediaChange() {
+                    if (MediaIdentity.changed(beforeIdentity, currentIdentity(controller))) {
+                        resumeOnce(
+                            PlaybackRequestResult.Confirmed(
+                                command = command,
+                                alreadyInRequestedState = false,
+                            ),
+                        )
+                    }
+                }
+                callback.onPlayback = { state ->
                     if (state == null) {
                         resumeOnce(PlaybackRequestResult.SessionUnavailable(emptyList()))
-                    } else if (matches(command, state)) {
+                    } else if (tracksMedia) {
+                        confirmMediaChange()
+                    } else if (matchesPlayback(command, state)) {
                         resumeOnce(
                             PlaybackRequestResult.Confirmed(
                                 command = command,
@@ -140,12 +160,19 @@ class YoutubeController(
                         )
                     }
                 }
+                callback.onMetadata = {
+                    if (tracksMedia) {
+                        confirmMediaChange()
+                    }
+                }
                 continuation.invokeOnCancellation { unregister() }
                 try {
                     markSent(true)
                     when (command) {
                         PlaybackCommand.PAUSE -> controller.transportControls.pause()
                         PlaybackCommand.PLAY -> controller.transportControls.play()
+                        PlaybackCommand.NEXT -> controller.transportControls.skipToNext()
+                        PlaybackCommand.PREVIOUS -> controller.transportControls.skipToPrevious()
                     }
                 } catch (error: Exception) {
                     markSent(false)
@@ -157,14 +184,18 @@ class YoutubeController(
                     )
                     return@suspendCancellableCoroutine
                 }
-                val after = controller.playbackState
-                if (matches(command, after)) {
-                    resumeOnce(
-                        PlaybackRequestResult.Confirmed(
-                            command = command,
-                            alreadyInRequestedState = beforeMatches,
-                        ),
-                    )
+                if (tracksMedia) {
+                    confirmMediaChange()
+                } else {
+                    val after = controller.playbackState
+                    if (matchesPlayback(command, after)) {
+                        resumeOnce(
+                            PlaybackRequestResult.Confirmed(
+                                command = command,
+                                alreadyInRequestedState = beforeMatches,
+                            ),
+                        )
+                    }
                 }
             }
         } finally {
@@ -173,24 +204,29 @@ class YoutubeController(
         }
     }
 
-    private fun supports(state: PlaybackState, command: PlaybackCommand): Boolean {
-        val actions = state.actions
-        if (actions == 0L) {
-            // 0은 거부가 아니라, 앱이 동작 목록을 채우지 않은 경우입니다. 이때만 요청을 시도합니다.
-            return true
-        }
-        val required = when (command) {
+    private fun requiredAction(command: PlaybackCommand): Long {
+        return when (command) {
             PlaybackCommand.PAUSE -> PlaybackState.ACTION_PAUSE
             PlaybackCommand.PLAY -> PlaybackState.ACTION_PLAY
+            PlaybackCommand.NEXT -> PlaybackState.ACTION_SKIP_TO_NEXT
+            PlaybackCommand.PREVIOUS -> PlaybackState.ACTION_SKIP_TO_PREVIOUS
         }
-        return actions and required != 0L
     }
 
-    private fun matches(command: PlaybackCommand, state: PlaybackState?): Boolean {
+    private fun matchesPlayback(command: PlaybackCommand, state: PlaybackState?): Boolean {
         return when (command) {
             PlaybackCommand.PAUSE -> state?.state == PlaybackState.STATE_PAUSED
             PlaybackCommand.PLAY -> state?.state == PlaybackState.STATE_PLAYING
+            PlaybackCommand.NEXT, PlaybackCommand.PREVIOUS -> false
         }
+    }
+
+    private fun currentIdentity(controller: MediaController): String? {
+        val metadata = controller.metadata
+        return MediaIdentity.of(
+            metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID),
+            metadata?.description?.title?.toString(),
+        )
     }
 
     private sealed interface FindResult {

@@ -66,6 +66,8 @@
     <string name="notice_stopped">제어를 중지했습니다.</string>
     <string name="notice_palm">손바닥을 확인했습니다. 카메라를 닫고 유튜브에 일시정지를 요청합니다.</string>
     <string name="notice_thumb">엄지를 확인했습니다. 카메라를 닫고 유튜브에 재생을 요청합니다.</string>
+    <string name="notice_thumb_down">엄지를 아래로 한 손 모양을 확인했습니다. 카메라를 닫고 유튜브에 다음 영상을 요청합니다.</string>
+    <string name="notice_closed_fist">주먹을 확인했습니다. 카메라를 닫고 유튜브에 이전 영상을 요청합니다.</string>
     <string name="notice_camera_failed">카메라를 열지 못했습니다. 실패 직후 자동으로 다시 열지 않습니다. 원인: %1$s</string>
     <string name="notice_camera_timeout">카메라 시작이 %1$d밀리초 안에 끝나지 않았습니다.</string>
     <string name="notice_recognizer_failed">제스처 인식기를 사용할 수 없습니다. 원인: %1$s</string>
@@ -77,10 +79,16 @@
     <string name="notice_play_confirmed">재생 요청을 보냈고, 유튜브 상태가 재생 중으로 확인되었습니다.</string>
     <string name="notice_pause_timeout">일시정지 요청은 보냈지만, 제한 시간 안에 일시정지 상태를 확인하지 못했습니다.</string>
     <string name="notice_play_timeout">재생 요청은 보냈지만, 제한 시간 안에 재생 상태를 확인하지 못했습니다.</string>
+    <string name="notice_next_confirmed">다음 영상 요청을 보냈고, 영상이 바뀐 것을 확인했습니다.</string>
+    <string name="notice_previous_confirmed">이전 영상 요청을 보냈고, 영상이 바뀐 것을 확인했습니다.</string>
+    <string name="notice_next_timeout">다음 영상 요청은 보냈지만, 제한 시간 안에 영상 변경을 확인하지 못했습니다.</string>
+    <string name="notice_previous_timeout">이전 영상 요청은 보냈지만, 제한 시간 안에 영상 변경을 확인하지 못했습니다.</string>
     <string name="notice_listener_missing">알림 접근이 꺼져 있어 미디어 세션을 조회할 수 없습니다.</string>
     <string name="notice_unsupported">유튜브 세션이 %1$s 동작을 지원하지 않는다고 알려 왔습니다. 재생/일시정지 토글로는 대체하지 않았습니다.</string>
     <string name="action_pause">일시정지</string>
     <string name="action_play">재생</string>
+    <string name="action_next">다음</string>
+    <string name="action_previous">이전</string>
     <string name="notice_playback_failed">유튜브 명령을 완료하지 못했습니다. %1$s</string>
     <string name="notice_session_response_timeout">미디어 세션 응답이 제한 시간 안에 끝나지 않았습니다.</string>
     <string name="notice_foreground_failed">포그라운드 서비스를 시작하지 못했습니다. %1$s</string>
@@ -93,6 +101,8 @@
     <string name="state_recognizing">제스처 확인 중</string>
     <string name="state_request_pause">일시정지 요청 중</string>
     <string name="state_request_play">재생 요청 중</string>
+    <string name="state_request_next">다음 영상 요청 중</string>
+    <string name="state_request_previous">이전 영상 요청 중</string>
     <string name="state_cleaning">카메라 정리 중</string>
     <string name="state_error">오류</string>
     <string name="channel_control_description">호출어 대기와 제스처 인식 상태를 보여 줍니다.</string>

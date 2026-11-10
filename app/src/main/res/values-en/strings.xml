@@ -66,6 +66,8 @@
     <string name="notice_stopped">Control stopped.</string>
     <string name="notice_palm">Open palm confirmed. Closing the camera and requesting pause in YouTube.</string>
     <string name="notice_thumb">Thumbs-up confirmed. Closing the camera and requesting play in YouTube.</string>
+    <string name="notice_thumb_down">Thumb down confirmed. Closing the camera and requesting the next video in YouTube.</string>
+    <string name="notice_closed_fist">Closed fist confirmed. Closing the camera and requesting the previous video in YouTube.</string>
     <string name="notice_camera_failed">Could not open the camera. It will not reopen immediately after this failure. Cause: %1$s</string>
     <string name="notice_camera_timeout">The camera did not start within %1$d ms.</string>
     <string name="notice_recognizer_failed">The gesture recognizer is unavailable. Cause: %1$s</string>
@@ -77,10 +79,16 @@
     <string name="notice_play_confirmed">Play was requested, and YouTube confirmed the playing state.</string>
     <string name="notice_pause_timeout">Pause was requested, but the paused state was not confirmed in time.</string>
     <string name="notice_play_timeout">Play was requested, but the playing state was not confirmed in time.</string>
+    <string name="notice_next_confirmed">The next video was requested, and the video change was confirmed.</string>
+    <string name="notice_previous_confirmed">The previous video was requested, and the video change was confirmed.</string>
+    <string name="notice_next_timeout">The next video was requested, but the video change was not confirmed in time.</string>
+    <string name="notice_previous_timeout">The previous video was requested, but the video change was not confirmed in time.</string>
     <string name="notice_listener_missing">Notification access is off, so media sessions cannot be read.</string>
     <string name="notice_unsupported">The YouTube session says it does not support %1$s. A play/pause toggle was not used instead.</string>
     <string name="action_pause">pause</string>
     <string name="action_play">play</string>
+    <string name="action_next">next</string>
+    <string name="action_previous">previous</string>
     <string name="notice_playback_failed">The YouTube command did not finish. %1$s</string>
     <string name="notice_session_response_timeout">The media session did not respond in time.</string>
     <string name="notice_foreground_failed">Could not start the foreground service. %1$s</string>
@@ -93,6 +101,8 @@
     <string name="state_recognizing">Checking gesture</string>
     <string name="state_request_pause">Requesting pause</string>
     <string name="state_request_play">Requesting play</string>
+    <string name="state_request_next">Requesting next video</string>
+    <string name="state_request_previous">Requesting previous video</string>
     <string name="state_cleaning">Closing camera</string>
     <string name="state_error">Error</string>
     <string name="channel_control_description">Shows wake-word waiting and gesture recognition status.</string>
