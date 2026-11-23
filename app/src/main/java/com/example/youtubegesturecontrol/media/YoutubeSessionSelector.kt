@@ -31,7 +31,15 @@ enum class SessionPlayback {
     OTHER,
 }
 
+/**
+ * 활성 세션의 요약입니다.
+ * mediaId, title, actions는 쇼츠 껍데기 판별에 쓰고, 패키지 선택에는 쓰지 않습니다.
+ * actions가 null이면 재생 상태를 읽지 못한 것입니다. 0은 광고된 동작이 없다는 값입니다.
+ */
 data class MediaSessionSnapshot(
     val packageName: String,
     val playback: SessionPlayback,
+    val mediaId: String? = null,
+    val title: String? = null,
+    val actions: Long? = null,
 )

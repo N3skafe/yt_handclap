@@ -21,6 +21,13 @@
     <string name="app_settings">App settings</string>
     <string name="notification_access">Notification access</string>
     <string name="overlay_settings">Display over other apps</string>
+    <string name="accessibility_settings">Accessibility settings</string>
+    <string name="accessibility_title">Shorts accessibility</string>
+    <string name="accessibility_message">Needed only for Shorts. Regular videos use the media session alone. Accessibility gestures are sent only while YouTube is in front.</string>
+    <string name="accessibility_service_label">Sena Cue Shorts</string>
+    <string name="accessibility_service_description">Controls YouTube Shorts playback with hand gestures while YouTube is in front.</string>
+    <string name="accessibility_on">Shorts accessibility: on</string>
+    <string name="accessibility_off">Shorts accessibility: off</string>
     <string name="overlay_title">Show the wake word over other apps</string>
     <string name="overlay_message">When HI SENA is heard, a blue banner appears briefly over YouTube. Allow this app to display over other apps. Without that, only a notification is shown. The banner does not take touches.</string>
     <string name="start_control">Start control</string>
@@ -68,6 +75,10 @@
     <string name="notice_thumb">Thumbs-up confirmed. Closing the camera and requesting play in YouTube.</string>
     <string name="notice_thumb_down">Thumb down confirmed. Closing the camera and requesting the next video in YouTube.</string>
     <string name="notice_closed_fist">Closed fist confirmed. Closing the camera and requesting the previous video in YouTube.</string>
+    <string name="notice_shorts_accessibility_off">Accessibility is off, so no Shorts gesture was sent. Regular videos still use the media session.</string>
+    <string name="notice_shorts_not_youtube">YouTube is not in front, so no gesture was sent.</string>
+    <string name="notice_shorts_gesture_sent">Sent the %1$s action with an accessibility gesture.</string>
+    <string name="notice_shorts_gesture_failed">The accessibility gesture could not be sent.</string>
     <string name="notice_camera_failed">Could not open the camera. It will not reopen immediately after this failure. Cause: %1$s</string>
     <string name="notice_camera_timeout">The camera did not start within %1$d ms.</string>
     <string name="notice_recognizer_failed">The gesture recognizer is unavailable. Cause: %1$s</string>

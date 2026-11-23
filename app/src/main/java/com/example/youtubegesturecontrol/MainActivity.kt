@@ -60,6 +60,7 @@ class MainActivity : AppCompatActivity() {
         binding.requestPermissionsButton.setOnClickListener { requestPermissionsForControl() }
         binding.appSettingsButton.setOnClickListener { openAppSettings() }
         binding.notificationAccessButton.setOnClickListener { explainNotificationAccess() }
+        binding.accessibilitySettingsButton.setOnClickListener { explainAccessibility() }
         binding.overlaySettingsButton.setOnClickListener { explainOverlay() }
         binding.startControlButton.setOnClickListener { onStartClicked() }
         binding.stopControlButton.setOnClickListener { ControlService.stop(this) }
@@ -169,6 +170,23 @@ class MainActivity : AppCompatActivity() {
         )
         try {
             startActivity(intent)
+        } catch (error: Exception) {
+            showMessage(getString(R.string.settings_open_failed))
+        }
+    }
+
+    private fun explainAccessibility() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.accessibility_title)
+            .setMessage(R.string.accessibility_message)
+            .setPositiveButton(R.string.open_settings) { _, _ -> openAccessibilitySettings() }
+            .setNegativeButton(R.string.cancel, null)
+            .show()
+    }
+
+    private fun openAccessibilitySettings() {
+        try {
+            startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
         } catch (error: Exception) {
             showMessage(getString(R.string.settings_open_failed))
         }

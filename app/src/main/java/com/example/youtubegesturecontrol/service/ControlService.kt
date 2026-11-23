@@ -14,6 +14,7 @@ import com.example.youtubegesturecontrol.YouTubeGestureApplication
 import com.example.youtubegesturecontrol.gesture.GestureAnalyzer
 import com.example.youtubegesturecontrol.gesture.GestureSample
 import com.example.youtubegesturecontrol.gesture.GestureStabilityTracker
+import com.example.youtubegesturecontrol.accessibility.ShortsAccessibilityFallback
 import com.example.youtubegesturecontrol.media.PlaybackCommand
 import com.example.youtubegesturecontrol.media.PlaybackRequestResult
 import com.example.youtubegesturecontrol.media.YoutubeController
@@ -320,8 +321,15 @@ class ControlService : Service() {
     private fun dispatch(sessionId: Long, command: PlaybackCommand) {
         commandJob?.cancel()
         commandJob = scope.launch {
-            val result = try {
+            val mediaResult = try {
                 youtubeController.request(command)
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                PlaybackRequestResult.Failed(command, describe(error))
+            }
+            val result = try {
+                ShortsAccessibilityFallback.afterMediaResult(mediaResult)
             } catch (error: CancellationException) {
                 throw error
             } catch (error: Exception) {

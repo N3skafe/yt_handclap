@@ -21,6 +21,13 @@
     <string name="app_settings">应用设置</string>
     <string name="notification_access">通知使用权</string>
     <string name="overlay_settings">显示在其他应用上层</string>
+    <string name="accessibility_settings">无障碍设置</string>
+    <string name="accessibility_title">Shorts 无障碍</string>
+    <string name="accessibility_message">只用于控制 Shorts。普通视频只使用媒体会话。只有 YouTube 在前台时才会发送无障碍手势。</string>
+    <string name="accessibility_service_label">Sena Cue Shorts</string>
+    <string name="accessibility_service_description">在 YouTube Shorts 处于前台时，用手势控制播放。</string>
+    <string name="accessibility_on">Shorts 无障碍：开</string>
+    <string name="accessibility_off">Shorts 无障碍：关</string>
     <string name="overlay_title">在其他应用上层显示唤醒词</string>
     <string name="overlay_message">听到 HI SENA 后，会在 YouTube 上短暂显示蓝色提示。需要允许此应用显示在其他应用上层。不允许时，只会用通知说明。该提示不接收触摸。</string>
     <string name="start_control">开始控制</string>
@@ -68,6 +75,10 @@
     <string name="notice_thumb">已确认竖起的大拇指。正在关闭相机，并向 YouTube 请求播放。</string>
     <string name="notice_thumb_down">已确认拇指向下。正在关闭相机，并向 YouTube 请求下一个视频。</string>
     <string name="notice_closed_fist">已确认握拳。正在关闭相机，并向 YouTube 请求上一个视频。</string>
+    <string name="notice_shorts_accessibility_off">无障碍功能已关闭，因此没有发送 Shorts 手势。普通视频仍通过媒体会话控制。</string>
+    <string name="notice_shorts_not_youtube">YouTube 不在前台，因此没有发送手势。</string>
+    <string name="notice_shorts_gesture_sent">已通过无障碍手势发送%1$s操作。</string>
+    <string name="notice_shorts_gesture_failed">无法发送无障碍手势。</string>
     <string name="notice_camera_failed">无法打开相机。失败后不会立刻自动重试。原因：%1$s</string>
     <string name="notice_camera_timeout">相机没有在 %1$d 毫秒内启动。</string>
     <string name="notice_recognizer_failed">无法使用手势识别器。原因：%1$s</string>

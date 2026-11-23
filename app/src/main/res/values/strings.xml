@@ -21,6 +21,13 @@
     <string name="app_settings">앱 설정</string>
     <string name="notification_access">알림 접근 설정</string>
     <string name="overlay_settings">화면 위 표시 설정</string>
+    <string name="accessibility_settings">접근성 설정</string>
+    <string name="accessibility_title">Shorts 접근성</string>
+    <string name="accessibility_message">Shorts 제어에만 필요합니다. 일반 영상은 미디어 세션만으로 동작합니다. 접근성 제스처는 유튜브가 앞에 있을 때만 보냅니다.</string>
+    <string name="accessibility_service_label">Sena Cue Shorts</string>
+    <string name="accessibility_service_description">유튜브 Shorts가 앞에 있을 때 손 제스처로 재생을 제어합니다.</string>
+    <string name="accessibility_on">Shorts 접근성: 켜짐</string>
+    <string name="accessibility_off">Shorts 접근성: 꺼짐</string>
     <string name="overlay_title">호출어를 화면 위에 표시</string>
     <string name="overlay_message">HI SENA가 들리면 유튜브 위에 파란 표시를 잠깐 띄웁니다. 다른 앱 위에 표시를 허용해야 합니다. 허용하지 않으면 알림으로만 알려 줍니다. 터치는 받지 않습니다.</string>
     <string name="start_control">제어 시작</string>
@@ -68,6 +75,10 @@
     <string name="notice_thumb">엄지를 확인했습니다. 카메라를 닫고 유튜브에 재생을 요청합니다.</string>
     <string name="notice_thumb_down">엄지를 아래로 한 손 모양을 확인했습니다. 카메라를 닫고 유튜브에 다음 영상을 요청합니다.</string>
     <string name="notice_closed_fist">주먹을 확인했습니다. 카메라를 닫고 유튜브에 이전 영상을 요청합니다.</string>
+    <string name="notice_shorts_accessibility_off">접근성이 꺼져 있어 Shorts 제스처를 보내지 않았습니다. 일반 영상은 미디어 세션으로 동작합니다.</string>
+    <string name="notice_shorts_not_youtube">유튜브가 앞에 있지 않아 제스처를 보내지 않았습니다.</string>
+    <string name="notice_shorts_gesture_sent">접근성 제스처로 %1$s 동작을 보냈습니다.</string>
+    <string name="notice_shorts_gesture_failed">접근성 제스처를 보내지 못했습니다.</string>
     <string name="notice_camera_failed">카메라를 열지 못했습니다. 실패 직후 자동으로 다시 열지 않습니다. 원인: %1$s</string>
     <string name="notice_camera_timeout">카메라 시작이 %1$d밀리초 안에 끝나지 않았습니다.</string>
     <string name="notice_recognizer_failed">제스처 인식기를 사용할 수 없습니다. 원인: %1$s</string>

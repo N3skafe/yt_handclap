@@ -21,6 +21,13 @@
     <string name="app_settings">アプリ設定</string>
     <string name="notification_access">通知へのアクセス</string>
     <string name="overlay_settings">他のアプリの上に表示</string>
+    <string name="accessibility_settings">ユーザー補助の設定</string>
+    <string name="accessibility_title">Shorts のユーザー補助</string>
+    <string name="accessibility_message">Shorts の制御にだけ必要です。通常の動画はメディアセッションだけで動きます。ユーザー補助のジェスチャーは YouTube が前面にあるときだけ送ります。</string>
+    <string name="accessibility_service_label">Sena Cue Shorts</string>
+    <string name="accessibility_service_description">YouTube Shorts が前面にあるとき、手のジェスチャーで再生を制御します。</string>
+    <string name="accessibility_on">Shorts のユーザー補助: オン</string>
+    <string name="accessibility_off">Shorts のユーザー補助: オフ</string>
     <string name="overlay_title">ウェイクワードを他のアプリの上に表示</string>
     <string name="overlay_message">HI SENA が聞こえると、YouTube の上に青い表示が少しの間出ます。他のアプリの上に表示する許可が必要です。許可しない場合は通知だけで知らせます。この表示はタッチを受け取りません。</string>
     <string name="start_control">制御を開始</string>
@@ -68,6 +75,10 @@
     <string name="notice_thumb">親指を上げるジェスチャーを確認しました。カメラを閉じて、YouTube に再生を依頼します。</string>
     <string name="notice_thumb_down">親指を下げた手の形を確認しました。カメラを閉じて、YouTube に次の動画を依頼します。</string>
     <string name="notice_closed_fist">拳を確認しました。カメラを閉じて、YouTube に前の動画を依頼します。</string>
+    <string name="notice_shorts_accessibility_off">ユーザー補助がオフなので、Shorts のジェスチャーは送っていません。通常の動画はメディアセッションで動きます。</string>
+    <string name="notice_shorts_not_youtube">YouTube が前面にないので、ジェスチャーは送っていません。</string>
+    <string name="notice_shorts_gesture_sent">ユーザー補助のジェスチャーで%1$sを送りました。</string>
+    <string name="notice_shorts_gesture_failed">ユーザー補助のジェスチャーを送れませんでした。</string>
     <string name="notice_camera_failed">カメラを開けませんでした。失敗の直後に自動では開き直しません。原因: %1$s</string>
     <string name="notice_camera_timeout">カメラの起動が %1$d ミリ秒以内に終わりませんでした。</string>
     <string name="notice_recognizer_failed">ジェスチャー認識を使えません。原因: %1$s</string>

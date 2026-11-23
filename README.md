@@ -4,19 +4,19 @@
 
 ### English
 
-Sena Cue controls a video in the installed YouTube app, including Shorts when that session advertises next and previous. Say **HI SENA** in English, then hold an open palm to pause, a thumbs-up to play, a thumb down for the next video, or a closed fist for the previous video. Speech and hand recognition stay on the phone. The screen language can be English, Korean, Simplified Chinese, or Japanese, and the appearance can follow the system or be light or dark. The longer guide below is written separately in English and Korean.
+Sena Cue controls playback in the installed YouTube app. Say **HI SENA** in English, then hold an open palm to pause, a thumbs-up to play, a thumb down for the next video, or a closed fist for the previous video. Regular videos use the media session. Shorts use an accessibility tap or swipe only while YouTube is in front. Speech and hand recognition stay on the phone. The screen language can be English, Korean, Simplified Chinese, or Japanese, and the appearance can follow the system or be light or dark. The longer guide below is written separately in English and Korean.
 
 ### 한국어
 
-Sena Cue는 폰에 설치된 유튜브 앱의 영상을 제어합니다. 세션이 다음·이전을 알려 주면 Shorts도 같은 손 모양으로 제어합니다. 영어로 **HI SENA**라고 말한 뒤, 손바닥은 일시정지, 엄지 올림은 재생, 엄지 내림은 다음, 주먹은 이전입니다. 음성과 손 인식은 폰 안에서 이루어집니다. 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고를 수 있고, 화면 모드는 시스템을 따르거나 라이트 또는 다크로 둘 수 있습니다. 아래의 긴 안내는 영어와 한국어로 나누어 적었습니다.
+Sena Cue는 폰에 설치된 유튜브 앱의 재생을 제어합니다. 영어로 **HI SENA**라고 말한 뒤, 손바닥은 일시정지, 엄지 올림은 재생, 엄지 내림은 다음, 주먹은 이전입니다. 일반 영상은 미디어 세션을 쓰고, Shorts는 접근성을 켠 뒤 유튜브가 앞에 있을 때만 탭이나 스와이프를 보냅니다. 음성과 손 인식은 폰 안에서 이루어집니다. 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고를 수 있고, 화면 모드는 시스템을 따르거나 라이트 또는 다크로 둘 수 있습니다. 아래의 긴 안내는 영어와 한국어로 나누어 적었습니다.
 
 ### 中文
 
-Sena Cue 可以控制已安装的 YouTube 应用中的视频。会话提供下一个和上一个时，Shorts 也用同样的手势控制。请用英语说 **HI SENA**，然后张开手掌暂停，竖起大拇指播放，拇指向下切换到下一个，握拳切换到上一个。语音和手势识别都在手机上完成。界面语言可以是英语、韩语、简体中文或日语，外观可以跟随系统，也可以设为浅色或深色。下面的详细说明分为英语和韩语。
+Sena Cue 可以控制已安装的 YouTube 应用的播放。请用英语说 **HI SENA**，然后张开手掌暂停，竖起大拇指播放，拇指向下切换到下一个，握拳切换到上一个。普通视频使用媒体会话。Shorts 只在开启无障碍且 YouTube 处于前台时发送点击或滑动。语音和手势识别都在手机上完成。界面语言可以是英语、韩语、简体中文或日语，外观可以跟随系统，也可以设为浅色或深色。下面的详细说明分为英语和韩语。
 
 ### 日本語
 
-Sena Cue は、インストール済みの YouTube アプリの動画を制御します。セッションが次へ・前へを示すときは、Shorts も同じ手の形で制御します。英語で **HI SENA** と言ってから、開いた手のひらで一時停止、親指を上げて再生、親指を下げて次へ、拳で前へです。音声と手の認識はこの端末の中で行います。画面の言語は英語、韓国語、簡体字中国語、日本語から選べます。画面モードはシステムに従うか、ライトまたはダークにできます。詳しい説明は下に英語と韓国語で分けてあります。
+Sena Cue は、インストール済みの YouTube アプリの再生を制御します。英語で **HI SENA** と言ってから、開いた手のひらで一時停止、親指を上げて再生、親指を下げて次へ、拳で前へです。通常の動画はメディアセッションを使います。Shorts はユーザー補助をオンにし、YouTube が前面にあるときだけタップまたはスワイプを送ります。音声と手の認識はこの端末の中で行います。画面の言語は英語、韓国語、簡体字中国語、日本語から選べます。画面モードはシステムに従うか、ライトまたはダークにできます。詳しい説明は下に英語と韓国語で分けてあります。
 
 ## English
 
@@ -26,7 +26,7 @@ Sena Cue listens for the English wake word **HI SENA**, then opens the front cam
 
 The screen language can be English, Korean, Simplified Chinese, or Japanese. Appearance can follow the system, or be light or dark. The button names in this English guide match the English screen.
 
-The app sends those commands only to the YouTube app package `com.google.android.youtube`. A regular video and a Short use the same gestures and the same session commands. Shorts are controlled when that session advertises skip next and skip previous. Each wake accepts one command.
+The app sends those commands only to the YouTube app package `com.google.android.youtube`. A regular video uses the media session. If that session does not advertise the action, and YouTube is in front with the Shorts accessibility service on, Sena Cue sends a tap or swipe instead. Each wake accepts one command.
 
 Audio is used only to decide whether **HI SENA** was said. Camera frames are used only to classify the hand. Neither is saved to a file or uploaded. The notification listener is used to find YouTube's media session.
 
@@ -89,7 +89,7 @@ Sena Cue는 영어 호출어 **HI SENA**를 들은 뒤 전면 카메라를 몇 �
 
 화면 언어는 영어, 한국어, 중국어 간체, 일본어 중에서 고릅니다. 화면 모드는 시스템을 따르거나 라이트 또는 다크입니다. 이 한국어 안내의 버튼 이름은 한국어 화면과 같습니다.
 
-명령은 유튜브 앱 패키지 `com.google.android.youtube`로만 갑니다. 일반 동영상과 Shorts는 같은 손 모양과 같은 세션 명령을 씁니다. Shorts는 그 세션이 다음·이전을 알려 줄 때 제어합니다. 호출어 한 번에는 명령을 한 번만 보냅니다.
+명령은 유튜브 앱 패키지 `com.google.android.youtube`로만 갑니다. 일반 영상은 미디어 세션을 사용합니다. 세션이 그 동작을 광고하지 않고, 접근성이 켜져 있으며 유튜브가 앞에 있을 때만 Shorts용 탭이나 스와이프를 보냅니다. 호출어 한 번에는 명령을 한 번만 보냅니다.
 
 마이크 소리는 **HI SENA**를 말했는지 판정하는 데만 쓰고, 카메라 화면은 손 모양을 판정하는 데만 씁니다. 둘 다 파일로 저장하거나 올리지 않습니다. 알림 접근은 유튜브 미디어 세션을 찾는 데 씁니다.
 

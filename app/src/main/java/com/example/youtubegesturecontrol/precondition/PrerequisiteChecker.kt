@@ -5,8 +5,11 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
+import android.provider.Settings
 import androidx.core.app.NotificationManagerCompat
 import androidx.core.content.ContextCompat
+import android.content.ComponentName
+import com.example.youtubegesturecontrol.accessibility.YoutubeGestureAccessibilityService
 import com.example.youtubegesturecontrol.AssetFiles
 import com.example.youtubegesturecontrol.R
 import com.example.youtubegesturecontrol.UserNotice
@@ -116,6 +119,13 @@ class PrerequisiteChecker(
                     context.getString(R.string.youtube_missing)
                 },
             )
+            appendLine(
+                if (accessibilityEnabled()) {
+                    context.getString(R.string.accessibility_on)
+                } else {
+                    context.getString(R.string.accessibility_off)
+                },
+            )
             append(context.getString(R.string.wake_word_line, phrase, detail))
             if (report.permanentlyDenied.isNotEmpty()) {
                 append("\n")
@@ -143,6 +153,17 @@ class PrerequisiteChecker(
 
     private fun listenerEnabled(): Boolean {
         return NotificationManagerCompat.getEnabledListenerPackages(context).contains(context.packageName)
+    }
+
+    private fun accessibilityEnabled(): Boolean {
+        val enabled = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+        ) ?: return false
+        val component = ComponentName(context, YoutubeGestureAccessibilityService::class.java)
+        return enabled.split(':').any { name ->
+            name.equals(component.flattenToString(), ignoreCase = true)
+        }
     }
 
     private fun modelInstalled(): Boolean {

@@ -14,6 +14,9 @@ sealed class PlaybackRequestResult {
 
     data class ConfirmationTimedOut(
         val command: PlaybackCommand,
+        val mediaId: String? = null,
+        val title: String? = null,
+        val actions: Long? = null,
     ) : PlaybackRequestResult()
 
     data class SessionUnavailable(
@@ -24,6 +27,9 @@ sealed class PlaybackRequestResult {
 
     data class ActionUnsupported(
         val command: PlaybackCommand,
+        val mediaId: String? = null,
+        val title: String? = null,
+        val actions: Long? = null,
     ) : PlaybackRequestResult()
 
     data class Failed(
@@ -34,6 +40,23 @@ sealed class PlaybackRequestResult {
     data object ResponseTimedOut : PlaybackRequestResult()
 
     data object PlaybackStateUnreadable : PlaybackRequestResult()
+
+    data class AccessibilityServiceOff(
+        val command: PlaybackCommand,
+    ) : PlaybackRequestResult()
+
+    data class AccessibilityNotYouTube(
+        val command: PlaybackCommand,
+        val foregroundPackage: String?,
+    ) : PlaybackRequestResult()
+
+    data class AccessibilityGestureCompleted(
+        val command: PlaybackCommand,
+    ) : PlaybackRequestResult()
+
+    data class AccessibilityGestureFailed(
+        val command: PlaybackCommand,
+    ) : PlaybackRequestResult()
 }
 
 fun PlaybackRequestResult.toNotice(): UserNotice {
@@ -49,5 +72,13 @@ fun PlaybackRequestResult.toNotice(): UserNotice {
         is PlaybackRequestResult.Failed -> UserNotice.PlaybackFailed(command, detail)
         PlaybackRequestResult.ResponseTimedOut -> UserNotice.SessionResponseTimedOut
         PlaybackRequestResult.PlaybackStateUnreadable -> UserNotice.PlaybackStateUnreadable
+        is PlaybackRequestResult.AccessibilityServiceOff ->
+            UserNotice.ShortsAccessibilityOff(command)
+        is PlaybackRequestResult.AccessibilityNotYouTube ->
+            UserNotice.ShortsNotInForeground(foregroundPackage)
+        is PlaybackRequestResult.AccessibilityGestureCompleted ->
+            UserNotice.ShortsGestureSent(command)
+        is PlaybackRequestResult.AccessibilityGestureFailed ->
+            UserNotice.ShortsGestureFailed(command)
     }
 }

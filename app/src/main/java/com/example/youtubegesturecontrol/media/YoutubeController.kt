@@ -8,6 +8,8 @@ import android.media.session.MediaSessionManager
 import android.media.session.PlaybackState
 import android.util.Log
 import com.example.youtubegesturecontrol.ControlTimeouts
+import com.example.youtubegesturecontrol.accessibility.ShortsAccessibilityFallback
+import com.example.youtubegesturecontrol.accessibility.ShortsAccessibilityPolicy
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeout
@@ -15,7 +17,8 @@ import kotlin.coroutines.resume
 
 /**
  * 설치된 유튜브 앱의 미디어 세션에 일시정지, 재생, 다음, 이전을 요청합니다.
- * 접근성 서비스, 화면 터치, 전역 재생 토글은 사용하지 않습니다.
+ * 쇼츠 껍데기(mediaId·title 없음, SEEK_TO 없음)는 전송 컨트롤을 호출하지 않고
+ * 바로 접근성 탭·스와이프를 보냅니다. 일반 영상은 미디어 세션만 확인합니다.
  *
  * 콜백은 컨트롤러를 만든 스레드의 Looper로 오므로 이 함수는 메인 스레드에서 호출합니다.
  * 성공적인 메서드 호출은 요청을 보냈다는 뜻일 뿐, 재생 상태가 바뀌었다는 뜻은 아닙니다.
@@ -24,14 +27,22 @@ class YoutubeController(
     private val context: Context,
 ) {
     suspend fun request(command: PlaybackCommand): PlaybackRequestResult {
+        val fingerprint = DispatchFingerprint()
         var requestSent = false
         return try {
-            withTimeout(ControlTimeouts.PLAYBACK_CONFIRMATION_TIMEOUT_MS) {
-                sendAndAwait(command) { sent -> requestSent = sent }
+            val located = findSession()
+            val shellResult = accessibilityForShell(located, command)
+            shellResult ?: withTimeout(ControlTimeouts.PLAYBACK_CONFIRMATION_TIMEOUT_MS) {
+                sendAndAwait(located, command, fingerprint) { sent -> requestSent = sent }
             }
         } catch (error: kotlinx.coroutines.TimeoutCancellationException) {
             if (requestSent) {
-                val result = PlaybackRequestResult.ConfirmationTimedOut(command)
+                val result = PlaybackRequestResult.ConfirmationTimedOut(
+                    command = command,
+                    mediaId = fingerprint.mediaId,
+                    title = fingerprint.title,
+                    actions = fingerprint.actions,
+                )
                 logResult(command, result)
                 result
             } else {
@@ -46,14 +57,39 @@ class YoutubeController(
         }
     }
 
-    private suspend fun sendAndAwait(
+    /**
+     * 쇼츠 껍데기면 미디어 확인 시간 밖에서 접근성으로 보냅니다.
+     * 껍데기가 아니거나 재생 상태를 못 읽으면 null이고, 그때는 미디어 세션만 사용합니다.
+     */
+    private suspend fun accessibilityForShell(
+        located: FindResult,
         command: PlaybackCommand,
+    ): PlaybackRequestResult? {
+        val found = located as? FindResult.Found ?: return null
+        val before = found.controller.playbackState ?: return null
+        val identity = describedMedia(found.controller)
+        if (!ShortsAccessibilityPolicy.looksLikeShortsShell(identity.mediaId, identity.title, before.actions)) {
+            return null
+        }
+        logDispatchStart(command, before, identity, shell = true)
+        return ShortsAccessibilityFallback.performForShell(
+            command,
+            identity.mediaId,
+            identity.title,
+            before.actions,
+        )
+    }
+
+    private suspend fun sendAndAwait(
+        located: FindResult,
+        command: PlaybackCommand,
+        fingerprint: DispatchFingerprint,
         markSent: (Boolean) -> Unit,
     ): PlaybackRequestResult {
-        when (val found = findSession()) {
-            FindResult.ListenerMissing -> return PlaybackRequestResult.ListenerAccessMissing
-            is FindResult.Unavailable -> return PlaybackRequestResult.SessionUnavailable(found.otherPackages)
-            is FindResult.Found -> return dispatch(found.controller, command, markSent)
+        return when (located) {
+            FindResult.ListenerMissing -> PlaybackRequestResult.ListenerAccessMissing
+            is FindResult.Unavailable -> PlaybackRequestResult.SessionUnavailable(located.otherPackages)
+            is FindResult.Found -> dispatch(located.controller, command, fingerprint, markSent)
         }
     }
 
@@ -93,22 +129,46 @@ class YoutubeController(
             PlaybackState.STATE_PAUSED -> SessionPlayback.PAUSED
             else -> SessionPlayback.OTHER
         }
+        val identity = describedMedia(controller)
         return MediaSessionSnapshot(
             packageName = controller.packageName ?: "",
             playback = playback,
+            mediaId = identity.mediaId,
+            title = identity.title,
+            actions = controller.playbackState?.actions,
         )
     }
 
     private suspend fun dispatch(
         controller: MediaController,
         command: PlaybackCommand,
+        fingerprint: DispatchFingerprint,
         markSent: (Boolean) -> Unit,
     ): PlaybackRequestResult {
         val before = controller.playbackState
-        logDispatchStart(command, controller, before)
+        val identity = describedMedia(controller)
+        fingerprint.mediaId = identity.mediaId
+        fingerprint.title = identity.title
+        fingerprint.actions = before?.actions
+        val shell = before != null && ShortsAccessibilityPolicy.looksLikeShortsShell(
+            identity.mediaId,
+            identity.title,
+            before.actions,
+        )
+        logDispatchStart(command, before, identity, shell)
         if (before == null) {
             Log.i(TAG, "dispatch PlaybackStateUnreadable command=$command")
             return PlaybackRequestResult.PlaybackStateUnreadable
+        }
+        // 쇼츠 껍데기는 pause/play 비트가 있어도 전송하지 않습니다.
+        // 그 호출은 상태가 바뀌지 않아 확인 시간만 지나고, 탭이 나가지 않습니다.
+        if (shell) {
+            return PlaybackRequestResult.ActionUnsupported(
+                command = command,
+                mediaId = identity.mediaId,
+                title = identity.title,
+                actions = before.actions,
+            )
         }
         val required = requiredAction(command)
         if (!PlaybackActionSupport.allows(before.actions, required)) {
@@ -116,7 +176,12 @@ class YoutubeController(
                 TAG,
                 "dispatch ActionUnsupported command=$command requiredAction=$required actions=${before.actions}",
             )
-            return PlaybackRequestResult.ActionUnsupported(command)
+            return PlaybackRequestResult.ActionUnsupported(
+                command = command,
+                mediaId = identity.mediaId,
+                title = identity.title,
+                actions = before.actions,
+            )
         }
         val tracksMedia = command == PlaybackCommand.NEXT || command == PlaybackCommand.PREVIOUS
         val beforeMatches = if (tracksMedia) false else matchesPlayback(command, before)
@@ -243,26 +308,40 @@ class YoutubeController(
 
     private fun logSession(index: Int, controller: MediaController) {
         val state = controller.playbackState
-        val metadata = controller.metadata
+        val identity = describedMedia(controller)
+        val actions = state?.actions
+        val shell = actions != null && ShortsAccessibilityPolicy.looksLikeShortsShell(
+            identity.mediaId,
+            identity.title,
+            actions,
+        )
         Log.i(
             TAG,
             "session[$index] pkg=${controller.packageName} playback=${state?.state} " +
-                "actions=${state?.actions} mediaId=${metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)} " +
-                "title=${metadata?.description?.title}",
+                "actions=$actions shell=$shell hasMediaId=${!identity.mediaId.isNullOrEmpty()} " +
+                "hasTitle=${!identity.title.isNullOrEmpty()}",
         )
     }
 
     private fun logDispatchStart(
         command: PlaybackCommand,
-        controller: MediaController,
         state: PlaybackState?,
+        identity: DescribedMedia,
+        shell: Boolean,
     ) {
-        val metadata = controller.metadata
         Log.i(
             TAG,
-            "dispatch command=$command playback=${state?.state} actions=${state?.actions} " +
-                "mediaId=${metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID)} " +
-                "title=${metadata?.description?.title}",
+            "dispatch shell=$shell skipMedia=$shell command=$command playback=${state?.state} " +
+                "actions=${state?.actions} hasMediaId=${!identity.mediaId.isNullOrEmpty()} " +
+                "hasTitle=${!identity.title.isNullOrEmpty()}",
+        )
+    }
+
+    private fun describedMedia(controller: MediaController): DescribedMedia {
+        val metadata = controller.metadata
+        return DescribedMedia(
+            mediaId = metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID),
+            title = metadata?.description?.title?.toString(),
         )
     }
 
@@ -280,7 +359,8 @@ class YoutubeController(
             return
         }
         val identity = if (command == PlaybackCommand.NEXT || command == PlaybackCommand.PREVIOUS) {
-            " beforeIdentity=$beforeIdentity afterIdentity=$afterIdentity"
+            " hasBeforeIdentity=${beforeIdentity != null} hasAfterIdentity=${afterIdentity != null} " +
+                "identityChanged=${MediaIdentity.changed(beforeIdentity, afterIdentity)}"
         } else {
             ""
         }
@@ -293,6 +373,17 @@ class YoutubeController(
             metadata?.getString(MediaMetadata.METADATA_KEY_MEDIA_ID),
             metadata?.description?.title?.toString(),
         )
+    }
+
+    private data class DescribedMedia(
+        val mediaId: String?,
+        val title: String?,
+    )
+
+    private class DispatchFingerprint {
+        var mediaId: String? = null
+        var title: String? = null
+        var actions: Long? = null
     }
 
     private sealed interface FindResult {

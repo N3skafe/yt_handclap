@@ -71,4 +71,12 @@ sealed class UserNotice {
     data object PlaybackStateUnreadable : UserNotice()
 
     data class ControlInterrupted(val detail: String) : UserNotice()
+
+    data class ShortsAccessibilityOff(val command: PlaybackCommand) : UserNotice()
+
+    data class ShortsNotInForeground(val foregroundPackage: String?) : UserNotice()
+
+    data class ShortsGestureSent(val command: PlaybackCommand) : UserNotice()
+
+    data class ShortsGestureFailed(val command: PlaybackCommand) : UserNotice()
 }

@@ -149,6 +149,13 @@
             android:text="@string/notification_access" />
 
         <com.google.android.material.button.MaterialButton
+            android:id="@+id/accessibilitySettingsButton"
+            style="?attr/materialButtonOutlinedStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/accessibility_settings" />
+
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/overlaySettingsButton"
             style="?attr/materialButtonOutlinedStyle"
             android:layout_width="match_parent"

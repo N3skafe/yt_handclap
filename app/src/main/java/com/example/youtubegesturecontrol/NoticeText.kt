@@ -85,6 +85,11 @@ private fun Context.renderNotice(notice: UserNotice): String {
         is UserNotice.WakeWordModelMissing -> getString(R.string.wake_word_missing, notice.files)
         UserNotice.PlaybackStateUnreadable -> getString(R.string.notice_playback_state_unreadable)
         is UserNotice.ControlInterrupted -> getString(R.string.notice_interrupted, notice.detail)
+        is UserNotice.ShortsAccessibilityOff -> getString(R.string.notice_shorts_accessibility_off)
+        is UserNotice.ShortsNotInForeground -> getString(R.string.notice_shorts_not_youtube)
+        is UserNotice.ShortsGestureSent ->
+            getString(R.string.notice_shorts_gesture_sent, actionName(notice.command))
+        is UserNotice.ShortsGestureFailed -> getString(R.string.notice_shorts_gesture_failed)
     }
 }
 
